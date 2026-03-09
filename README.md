@@ -119,6 +119,8 @@ A unified settings panel with real-time preview. Changes apply instantly — no 
 | Weather | [Open-Meteo API](https://open-meteo.com/) (free, no key) |
 | Geocoding | [Nominatim / OpenStreetMap](https://nominatim.org/) (free, no key) |
 | Icons | [Meteocons by Bas Milius](https://bas.dev/work/meteocons) (animated SVG) |
+| Local AI Runtime | [Ollama](https://ollama.com/) — local LLM inference, no data leaves the machine |
+| Local AI Model | [Phi-3 Mini](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct) (Microsoft, MIT licence) — 3.8B parameters, 4-bit quantised |
 
 ---
 
@@ -127,6 +129,12 @@ A unified settings panel with real-time preview. Changes apply instantly — no 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) v18 or higher
 - npm v9 or higher
+- [Ollama](https://ollama.com/) — required for AIDA local chat
+
+```bash
+# After installing Ollama, pull the default AIDA model
+ollama pull phi3mini
+```
 
 ### Installation
 
@@ -226,8 +234,8 @@ The following is ordered by priority, with no time constraints attached. AIDA is
 
 ### Longer Term
 - [ ] **Plugin system** — allow third-party widgets
-- [ ] **AIDA AI layer** — a proactive assistant that surfaces suggestions based on schedule, files, and context
-- [ ] **Cross-platform** — macOS and Linux support
+- [x] **AIDA local AI** — floating draggable chat window powered by local Ollama inference (Phi-3 Mini). Private by architecture — no data leaves the machine. Triggered via `?` in the Productivity Bar.
+- [ ] **Cross-platform** — macOS and Linux support (ENGIOS is the Linux-first build)
 - [ ] **Cloud sync** — optional settings sync across machines
 - [ ] **Packaged installer** — one-click Windows installer via Electron Forge
 
@@ -243,6 +251,12 @@ Contributions are welcome. Please open an issue before submitting a pull request
 4. Push and open a pull request against `main`
 
 Please follow the existing code style — TypeScript strict mode, inline styles for dynamic values, and components under 200 lines where possible.
+
+---
+
+## Third Party Models
+
+AIDA's local intelligence layer uses [Phi-3 Mini](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct) by Microsoft, released under the [MIT licence](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct/blob/main/LICENSE). The model runs entirely locally via [Ollama](https://ollama.com/). No queries leave the machine. Phi-3 Mini is a component — AIDA is the layer on top.
 
 ---
 
