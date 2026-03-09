@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Replace with your actual logo path once hosted -->
-<img src="src/assets/icons/aida_logo.svg" alt="AIDA Logo" width="120" />
+<img src="src/assets/icons/aida_logo.png" alt="AIDA Logo" width="120" />
 
 # AIDA
 ### AI-Integrated Desktop Assistant
