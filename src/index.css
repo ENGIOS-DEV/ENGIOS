@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+body {
+  overflow: hidden;
+  background: transparent;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* ─── Date & Time Picker Dropdowns ──────────────────────────────────────── */
+/* Replaces the harsh Win98-style blue highlight with a soft rounded accent  */
+
+::-webkit-datetime-edit-fields-wrapper {
+  border-radius: 6px;
+}
+
+::-webkit-datetime-edit-year-field:focus,
+::-webkit-datetime-edit-month-field:focus,
+::-webkit-datetime-edit-day-field:focus,
+::-webkit-datetime-edit-hour-field:focus,
+::-webkit-datetime-edit-minute-field:focus,
+::-webkit-datetime-edit-second-field:focus,
+::-webkit-datetime-edit-ampm-field:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  color: white;
+  outline: none;
+}
+
+::-webkit-calendar-picker-indicator {
+  opacity: 0.35;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px;
+  transition: opacity 0.2s;
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.65;
+  background: rgba(255, 255, 255, 0.08);
+}
