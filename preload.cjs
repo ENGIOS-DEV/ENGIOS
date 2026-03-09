@@ -35,6 +35,26 @@ contextBridge.exposeInMainWorld('electron', {
       update: (id, changes)  => ipcRenderer.invoke('db:events:update', id, changes),
       delete: (id)           => ipcRenderer.invoke('db:events:delete', id),
     },
+    chat: {
+      folders: {
+        get:    ()                => ipcRenderer.invoke('db:chat:folders:get'),
+        create: (data)            => ipcRenderer.invoke('db:chat:folders:create', data),
+        update: (id, changes)     => ipcRenderer.invoke('db:chat:folders:update', id, changes),
+        delete: (id)              => ipcRenderer.invoke('db:chat:folders:delete', id),
+      },
+      conversations: {
+        get:    (opts)            => ipcRenderer.invoke('db:chat:conversations:get', opts),
+        create: (data)            => ipcRenderer.invoke('db:chat:conversations:create', data),
+        update: (id, changes)     => ipcRenderer.invoke('db:chat:conversations:update', id, changes),
+        delete: (id)              => ipcRenderer.invoke('db:chat:conversations:delete', id),
+        search: (query)           => ipcRenderer.invoke('db:chat:conversations:search', query),
+      },
+      messages: {
+        get:    (conversationId)  => ipcRenderer.invoke('db:chat:messages:get', conversationId),
+        add:    (data)            => ipcRenderer.invoke('db:chat:messages:add', data),
+        delete: (id)              => ipcRenderer.invoke('db:chat:messages:delete', id),
+      },
+    },
   },
 
   // File System

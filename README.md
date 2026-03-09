@@ -1,126 +1,172 @@
 <div align="center">
 
-<!-- Replace with your actual logo path once hosted -->
-<img src="src/assets/icons/aida_logo.png" alt="AIDA Logo" width="120" />
+<img src="src/assets/icons/ENGIOS_logo_text.png" alt="ENGIOS Logo" width="120" />
 
-# AIDA
-### AI-Integrated Desktop Assistant
+# ENGIOS
+### Engineered Intelligent OS
 
-*A proactive, always-on desktop companion that anticipates your needs — not just another app to open.*
+*Because machines deserve to live longer too.*
 
-[![Electron](https://img.shields.io/badge/Electron-latest-47848F?style=flat-square&logo=electron)](https://www.electronjs.org/)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://react.dev/)
+[![Debian](https://img.shields.io/badge/Base-Debian%2013-A81D33?style=flat-square&logo=debian)](https://www.debian.org/)
+[![Electron](https://img.shields.io/badge/Shell-Electron-47848F?style=flat-square&logo=electron)](https://www.electronjs.org/)
+[![React](https://img.shields.io/badge/UI-React%2018-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-latest-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 </div>
 
 ---
 
-## The Vision
+## What Is ENGIOS?
 
-Most desktop tools are **reactive** — you open them when you need them, then close them and forget they exist. AIDA is different.
+ENGIOS is a next-generation Linux-based operating system built around one founding principle:
 
-AIDA is designed to be **proactive**. It lives quietly at the edge of your screen, always present but never intrusive, surfacing what you need before you know you need it. It's not a launcher, not a widget pack, not a dashboard — it's a unified layer of intelligence that wraps around your entire workflow.
+> **The computer works for the human. Not the other way around.**
 
-The philosophy is simple: **your desktop should work for you, not the other way around**. AIDA acts as a persistent co-pilot — aware of your schedule, your files, your system, and your preferred AI tools — ready to act the moment you reach for it.
+It is intelligent, modular, sustainable, and private by architecture. It extends the life of hardware that the industry has declared obsolete — not because that hardware is incapable, but because it lacks an arbitrary chip or falls outside an artificial generation cutoff.
 
-Every design decision has been made in service of one goal: **keep you in flow**.
+ENGIOS is being developed and tested on a donated 2017 HP Pavilion 250 G6 — a machine Microsoft abandoned for Windows 11. It runs beautifully on 379MB of RAM. That is not a compromise. That is a statement.
 
 ---
 
-## What AIDA Is (And Isn't)
+## The Mission
 
-| AIDA **is** | AIDA **is not** |
+The technology industry has a disposal problem. Millions of capable machines are discarded every year — not because they are broken, but because software has been engineered to outgrow them. ENGIOS is a direct response to that.
+
+**Hardware longevity is not optional. It is a founding principle.**
+
+A machine that works should keep working. An OS that respects the hardware it runs on, respects the person who owns it, and respects the planet it exists on — that is what ENGIOS is.
+
+---
+
+## AIDA — The Intelligence Layer
+
+ENGIOS ships with AIDA: a kernel-adjacent intelligence woven into the OS. Not an app. Not a chatbot. A custodian of your hardware and a silent co-pilot for your workflow.
+
+> *"A custodian of your hardware — not a CEO of your life."*
+> — ENGIOS Design Law №7
+
+AIDA watches your resources, learns your habits, and surfaces what you need before you reach for it. Everything it learns lives on your machine. Nothing leaves without your instruction. It offers — never orders.
+
+**AIDA's operational boundaries are absolute:**
+- Online access — update events only, initiated by ENGIOS, never by the model
+- Task scope — defined and bounded by ENGIOS, never self-expanding
+- Capability upgrades — triggered by hardware or edition changes only
+
+> *"The AI serves within boundaries we set. Not boundaries it sets for itself."*
+> — ENGIOS Design Law №15
+
+---
+
+## Four Editions. One Core.
+
+All editions share a single hardened core — same kernel, same security model, same driver stack. Tier-specific capabilities layer on top. Users migrate between editions without reinstalling.
+
+| Edition | Target | Positioning |
+|---|---|---|
+| **Personal** | Everyday users | Calm, simple, capable. *~ relief ~* |
+| **Gaming** | Performance users | GPU-optimised. Controller-ready. *~ freedom ~* |
+| **Productivity** | Developers & creators | Power tools, deep workflow |
+| **Enterprise** | Businesses | LTS, managed, auditable, compliant. *~ confidence ~* |
+
+---
+
+## Privacy by Architecture
+
+Privacy in ENGIOS is not a setting you enable. It is the default state of the entire system.
+
+| Principle | Implementation |
 |---|---|
-| Always visible, never in the way | A full-screen application |
-| A unified command surface | A replacement for your existing apps |
-| Proactively aware of context | An AI chatbot |
-| Deeply customisable | Bloatware |
-| A productivity multiplier | Another thing to manage |
+| Local AI inference | Queries never leave your machine |
+| Contained sessions | History goes nowhere by default |
+| No telemetry | No data collection. No exceptions |
+| Local credential storage | Passwords on your device only |
+| No third parties | Not a spy. Not a profile. Not a product |
+
+> *"Your privacy is never a fair exchange."*
+> — ENGIOS Design Law №6
 
 ---
 
-## Features
+## What ENGIOS Delivers
 
-### Menu Bar
-A pull-down panel that lives at the very top of your screen. Tap the handle to reveal it; it retreats automatically after a configurable delay. It contains four sections:
+### The Productivity Bar
+One unified input surface replaces three separate applications. Type anything — find a file, ask AIDA a question, search the web, set a reminder. The system silently routes intent to the right capability. No mode switching. No app launching. No friction.
 
-- **Quick Actions** — one-click access to create notes, tasks, and calendar events
-- **Today** — your schedule at a glance, without opening a calendar app
-- **Notifications** — a unified, noise-filtered feed of what actually matters
-- **System** — volume, and other system-level controls
+### AIDA Chat
+A persistent, locally-stored conversation layer. Full chat history with folder organisation, search, and pinned conversations — all backed by SQLite on your machine. Streaming responses via local inference. Nothing in the cloud.
 
-The bar is fully transparent and blurred, blending seamlessly with any wallpaper.
-
----
-
-### Clock & Weather Widget
-A floating widget that sits anywhere on your desktop. It shows the time, day, date, and live weather pulled from [Open-Meteo](https://open-meteo.com/) — no API key required.
-
-- Animated weather icons that respond to current conditions and time of day
-- Draggable — position it exactly where you want it
-- **Lock position** to prevent accidental movement
-- Full appearance customisation: font, weight, size, opacity, alignment, layout
-- Independent background and border controls
-- City override, or automatic geolocation
-- Celsius / Fahrenheit toggle
-- All settings persist across restarts
-
----
-
-### AI Provider Launcher
-Quick access to your preferred AI chat interfaces, launched as persistent Electron windows — not browser tabs. Each provider maintains its own login session independently.
-
-Supported providers:
-- **Gemini** (Google)
-- **Meta AI**
-- **Groq**
-- **Claude** (Anthropic)
-- **ChatGPT** (OpenAI)
-- **Google Search**
-- **Brave Search**
-
----
-
-### File Search
-A fast, local file search bar that scans your Desktop, Documents, Downloads, Pictures, Videos, and Music folders — no indexing service, no background daemon. Results appear instantly, and files open with a single click.
-
----
+### The Integrated Explorer
+A three-pane file explorer with resizable panels. Left: folder hierarchy. Centre: live adaptive workspace. Right: directory contents. Every pane adjustable to how you work.
 
 ### System Monitor
-Circular progress rings showing live system metrics. Fully configurable — choose which metrics to display and where on screen to position them.
+Live performance rings — CPU, RAM, GPU, DISK, TEMP, NETWORK, BATTERY. Positioned anywhere on screen. Always present, never intrusive.
 
-Available metrics: **CPU · RAM · GPU · VRAM · DISK · TEMP · NETWORK · BATTERY**
+### Clock & Weather Widget
+Floating, draggable, fully configurable. Live weather via Open-Meteo — no API key, no account, no tracking.
 
----
-
-### Global Settings
-A unified settings panel with real-time preview. Changes apply instantly — no save button, no restart required.
-
-| Tab | Controls |
-|---|---|
-| **Appearance** | Transparency, blur intensity, accent colour, font size |
-| **Behavior** | Auto-hide delay, default menu state, animation speed |
-| **Monitors** | System monitor toggle, component selection, position |
-| **System** | Auto-start with Windows, *(Notifications, Language — coming soon)* |
+### Menu Bar
+A pull-down panel with quick actions, today's schedule, notifications, and system controls. Auto-hides. Fully transparent. Blends with any wallpaper.
 
 ---
 
-## Tech Stack
+## The Test Machine
 
-| Layer | Technology |
+ENGIOS is developed and tested on a **donated HP Pavilion 250 G6 (2017)**.
+
+| Spec | Detail |
 |---|---|
-| Shell | [Electron](https://www.electronjs.org/) |
-| UI | [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
-| Build | [Vite](https://vitejs.dev/) |
-| Styling | [Tailwind CSS](https://tailwindcss.com/) + inline styles for dynamic values |
-| Weather | [Open-Meteo API](https://open-meteo.com/) (free, no key) |
-| Geocoding | [Nominatim / OpenStreetMap](https://nominatim.org/) (free, no key) |
-| Icons | [Meteocons by Bas Milius](https://bas.dev/work/meteocons) (animated SVG) |
-| Local AI Runtime | [Ollama](https://ollama.com/) — local LLM inference, no data leaves the machine |
-| Local AI Model | [Phi-3 Mini](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct) (Microsoft, MIT licence) — 3.8B parameters, 4-bit quantised |
+| Processor | Intel Core i5-7200U — 2 cores / 4 threads |
+| RAM | 8GB |
+| Storage | 256GB SSD |
+| Graphics | Intel HD Graphics 620 |
+| Windows 11 eligible | **No** — abandoned by Microsoft |
+| ENGIOS eligible | **Yes** — runs beautifully |
+
+This machine represents millions like it. If ENGIOS runs beautifully here, it runs beautifully everywhere that matters.
+
+---
+
+## Technical Foundation
+
+| Layer | Technology | Reason |
+|---|---|---|
+| OS Base | Debian 13 (Trixie) — stable, amd64 | Community governed since 1993. Social Contract. No corporate owner |
+| AI Runtime | Ollama | Local inference. No phone home. Fully controllable |
+| AI Model (Personal) | Microsoft Phi-3 Mini 3.8B (4-bit GGUF) | Designed for edge devices. Exceptional reasoning on constrained hardware |
+| AI Model (Performance) | Mistral 7B / Llama 3.1 8B | Mid to high range hardware |
+| AI Model (Enterprise) | Llama 3.1 70B quantised | Server grade hardware |
+| Desktop Shell | Electron (transitional) | AIDA codebase already proven. Native Wayland compositor is the long-term goal |
+| UI | React 18 + TypeScript + Vite | |
+| Database | SQLite via better-sqlite3 | Local. Private. No server |
+| Styling | Tailwind CSS + inline styles | |
+
+> *"The intelligence adapts to the hardware. Not the other way around."*
+> — ENGIOS Design Law №14
+
+---
+
+## The Design Laws
+
+Every decision in ENGIOS is governed by these principles:
+
+| # | Law |
+|---|---|
+| 1 | The computer works for the human. Not the other way around. |
+| 2 | Privacy is not a feature. It is the default state of the entire system. |
+| 3 | Hardware longevity is not optional. It is a founding principle. |
+| 4 | Sovereignty is not a mode you activate. It is permanent. |
+| 5 | Traditionally, operating systems have asked you to adapt. ENGIOS adapts to you. |
+| 6 | Your privacy is never a fair exchange. |
+| 7 | A custodian of your hardware — not a CEO of your life. |
+| 8 | Because one shouldn't need to beg. |
+| 9 | Never point fingers. Never shame. Simply do the job better. |
+| 10 | If it's not necessary for OS or app operations, it does not belong on the system. |
+| 11 | What you install is your business. What you leave behind is ours. |
+| 12 | The measure of a system's intelligence is how rarely it makes the user feel like a beginner. |
+| 13 | Build on principles, not on compromises. |
+| 14 | The intelligence adapts to the hardware. Not the other way around. |
+| 15 | The AI serves within boundaries we set. Not boundaries it sets for itself. |
 
 ---
 
@@ -129,19 +175,14 @@ A unified settings panel with real-time preview. Changes apply instantly — no 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) v18 or higher
 - npm v9 or higher
-- [Ollama](https://ollama.com/) — required for AIDA local chat
-
-```bash
-# After installing Ollama, pull the default AIDA model
-ollama pull phi3mini
-```
+- [Ollama](https://ollama.com/) running locally (for AIDA)
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/aida.git
-cd aida
+git clone https://github.com/ENGIOS-DEV/ENGIOS.git
+cd ENGIOS
 
 # Install dependencies
 npm install --legacy-peer-deps
@@ -153,10 +194,10 @@ npm run dev
 ### Running as Electron App
 
 ```bash
-# In one terminal — start the Vite dev server
+# Terminal 1 — Vite dev server
 npm run dev
 
-# In another terminal — launch Electron
+# Terminal 2 — Electron
 npx electron electron.cjs
 ```
 
@@ -164,6 +205,7 @@ npx electron electron.cjs
 
 ```bash
 npm run build
+npm start
 ```
 
 ---
@@ -171,92 +213,71 @@ npm run build
 ## Project Structure
 
 ```
-aida/
-├── electron.cjs              # Electron main process
-├── preload.cjs               # Secure IPC bridge
+ENGIOS/
+├── electron.cjs                  # Electron main process + IPC handlers
+├── preload.cjs                   # Secure IPC bridge
+├── database.cjs                  # SQLite schema — notes, tasks, events, chat
 ├── src/
-│   ├── App.tsx               # Root component & settings orchestration
-│   ├── zIndex.ts             # Centralised z-index layer system
-│   ├── theme.ts              # Shared styling functions
-│   ├── index.css             # Global styles
+│   ├── App.tsx                   # Root component & state orchestration
+│   ├── zIndex.ts                 # Centralised z-index layer system
 │   ├── components/
 │   │   ├── MenuBar.tsx           # Pull-down menu panel
-│   │   ├── MenuBarHandle.tsx     # The three-dot trigger pill
-│   │   ├── ProductivityBar.tsx   # AI launcher + file search
-│   │   ├── ClockWeatherWidget.tsx # Floating clock & weather
-│   │   ├── SystemMonitor.tsx     # Performance rings
-│   │   ├── GlobalSettings.tsx    # Settings modal
-│   │   └── SettingsShell.tsx     # Reusable settings UI framework
-│   ├── services/
-│   │   └── fileSearchService.ts  # Local file system search
+│   │   ├── MenuBarHandle.tsx     # Trigger handle
+│   │   ├── ProductivityBar.tsx   # Unified input — search, AI, files, chats
+│   │   ├── AidaChat.tsx          # AIDA conversation interface
+│   │   ├── FileExplorer.tsx      # Three-pane file explorer
+│   │   ├── Terminal.tsx          # Embedded terminal
+│   │   ├── ClockWeatherWidget.tsx
+│   │   ├── SystemMonitor.tsx
+│   │   ├── GlobalSettings.tsx
+│   │   └── SettingsShell.tsx
 │   ├── helpers/
-│   │   └── aiProvider.ts         # AI provider utilities
+│   │   └── aiProvider.ts         # Ollama streaming interface
+│   ├── services/
+│   │   ├── fileSearchService.ts
+│   │   └── notificationService.ts
 │   └── types/
-│       └── settings.ts           # All TypeScript interfaces & defaults
-└── public/
-    └── wallpaper.png             # Default wallpaper (replace with your own)
+│       └── settings.ts
 ```
-
----
-
-## Architecture Decisions
-
-**Why centralised z-index?**
-`zIndex.ts` is a single source of truth for every layer in the app. Without it, stacking contexts become impossible to reason about as the component tree grows.
-
-**Why a shared SettingsShell?**
-Every settings panel in AIDA imports from `SettingsShell.tsx`. This guarantees visual consistency with zero effort — a new widget's settings panel automatically looks identical to every other panel.
-
-**Why inline styles for dynamic values?**
-Tailwind classes are static. Values like blur intensity, transparency, and accent colour change at runtime based on user settings. Inline styles with computed values are the correct tool for this — there is no runtime Tailwind compiler.
-
-**Why Open-Meteo for weather?**
-Completely free, no API key required, no rate limits for reasonable usage, and the data quality is excellent. Removing the API key requirement removes a friction point for every new user.
 
 ---
 
 ## Roadmap
 
-The following is ordered by priority, with no time constraints attached. AIDA is built carefully — features ship when they are right, not when they are rushed.
+Built carefully. Features ship when they are right, not when they are rushed.
 
 ### Near Term
-- [ ] **Notes widget** — quick-capture floating notepad, persisted locally
-- [ ] **Real system metrics** — replace simulated data with live readings via `systeminformation`
-- [ ] **Notification system** — configurable, filterable notification feed
-- [ ] **Open-provider windows** — persistent Electron windows for AI providers with full login persistence
+- [ ] First AIDA conversation on physical hardware — THE milestone
+- [ ] AIDA boot greeting — contextual, time-aware
+- [ ] Plymouth boot splash — ENGIOS grid background
+- [ ] GiG (Get it Gone) — system-level uninstall cleanup
+- [ ] Productivity Bar — notes and task quick-capture
 
 ### Medium Term
-- [ ] **Calendar widget** — agenda view, event creation, calendar integration
-- [ ] **Music / media controller** — playback controls without switching focus
-- [ ] **Multi-monitor support** — widget positioning per display
-- [ ] **Custom wallpaper** — set and manage wallpaper from within AIDA
-- [ ] **Keyboard shortcuts** — power-user control surface
+- [ ] Native Wayland compositor — replace Electron shell
+- [ ] AIDA proactive suggestions — schedule and context aware
+- [ ] Multi-monitor support
+- [ ] Calendar integration
+- [ ] Packaged installer
 
 ### Longer Term
-- [ ] **Plugin system** — allow third-party widgets
-- [x] **AIDA local AI** — floating draggable chat window powered by local Ollama inference (Phi-3 Mini). Private by architecture — no data leaves the machine. Triggered via `?` in the Productivity Bar.
-- [ ] **Cross-platform** — macOS and Linux support (ENGIOS is the Linux-first build)
-- [ ] **Cloud sync** — optional settings sync across machines
-- [ ] **Packaged installer** — one-click Windows installer via Electron Forge
+- [ ] ENGIOS Personal edition — first public release
+- [ ] Gaming edition — GPU optimisation layer
+- [ ] Enterprise edition — audit, compliance, managed deployment
+- [ ] Hardware compatibility database
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please open an issue before submitting a pull request so we can discuss the approach first. This keeps the codebase intentional rather than accumulated.
+Contributions are welcome. Please open an issue before submitting a pull request — this keeps the codebase intentional rather than accumulated.
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Commit with clear messages: `git commit -m "feat: add notes widget"`
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit clearly: `git commit -m "feat: description"`
 4. Push and open a pull request against `main`
 
-Please follow the existing code style — TypeScript strict mode, inline styles for dynamic values, and components under 200 lines where possible.
-
----
-
-## Third Party Models
-
-AIDA's local intelligence layer uses [Phi-3 Mini](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct) by Microsoft, released under the [MIT licence](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct/blob/main/LICENSE). The model runs entirely locally via [Ollama](https://ollama.com/). No queries leave the machine. Phi-3 Mini is a component — AIDA is the layer on top.
+Code style: TypeScript strict mode · inline styles for dynamic values · components under 200 lines where possible · `apt purge` not `apt remove`.
 
 ---
 
@@ -267,5 +288,9 @@ MIT — see [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-<sub>Built with intention. Designed to disappear.</sub>
+
+*ENGIOS — Engineered Intelligent OS · [engios.dev](https://engios.dev)*
+
+**Sovereignty. Restored.**
+
 </div>

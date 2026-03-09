@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { CornerDownLeft, ChevronDown, ChevronUp, FileText, Folder } from 'lucide-react'
+import { CornerDownLeft, ChevronDown, FileText, Folder, MessageSquare } from 'lucide-react'
 import type { GlobalSettings } from '../types/settings'
 import type { SearchResult } from '../services/fileSearchService'
 import { FileSearchService } from '../services/fileSearchService'
@@ -17,6 +17,11 @@ declare global {
         notes:  { get: () => Promise<any[]>; create: (d: any) => Promise<any>; update: (id: number, c: any) => Promise<any>; delete: (id: number) => Promise<any> }
         tasks:  { get: () => Promise<any[]>; create: (d: any) => Promise<any>; update: (id: number, c: any) => Promise<any>; delete: (id: number) => Promise<any> }
         events: { get: (r?: any) => Promise<any[]>; create: (d: any) => Promise<any>; update: (id: number, c: any) => Promise<any>; delete: (id: number) => Promise<any> }
+        chat: {
+          folders:       { get: () => Promise<any[]>; create: (d: any) => Promise<any>; update: (id: number, c: any) => Promise<any>; delete: (id: number) => Promise<any> }
+          conversations: { get: (o?: any) => Promise<any[]>; create: (d: any) => Promise<any>; update: (id: number, c: any) => Promise<any>; delete: (id: number) => Promise<any>; search: (q: string) => Promise<any[]> }
+          messages:      { get: (convId: number) => Promise<any[]>; add: (d: any) => Promise<any>; delete: (id: number) => Promise<any> }
+        }
       }
       fs: {
         readdir: (dirPath: string) => Promise<Array<{ name: string; path: string; isDir: boolean; size: number; modified: Date }>>
@@ -75,13 +80,15 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer, onOpenAida }: P
   const [activeProvider, setActiveProvider] = useState(aiProviders[0])
   const [showDropdown,   setShowDropdown]   = useState(false)
   const [fileResults,    setFileResults]    = useState<SearchResult[]>([])
-  const [showFileResults,setShowFileResults]= useState(false)
+  const [showFileResults,  setShowFileResults]  = useState(false)
+  const [showRightDropdown, setShowRightDropdown] = useState(false)
   const [isSearching,    setIsSearching]    = useState(false)
 
   // ── AIDA chat state (persists across open/close) ─────────────────────────────
   const inputRef        = useRef<HTMLInputElement>(null)
   const dropdownRef     = useRef<HTMLDivElement>(null)
-  const fileResultsRef  = useRef<HTMLDivElement>(null)
+  const fileResultsRef     = useRef<HTMLDivElement>(null)
+  const rightDropdownRef   = useRef<HTMLDivElement>(null)
 
   // ── Close file results on outside click ─────────────────────────────────────
   useEffect(() => {
@@ -101,6 +108,7 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer, onOpenAida }: P
     if (!isMenuOpen) {
       setShowDropdown(false)
       setShowFileResults(false)
+      setShowRightDropdown(false)
       setInput('')
     }
   }, [isMenuOpen])
@@ -264,14 +272,44 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer, onOpenAida }: P
             {/* ── Divider ───────────────────────────────────────────── */}
             <div className="w-px h-5 bg-white/10 shrink-0" />
 
-            {/* ── Files Button ──────────────────────────────────────── */}
-            <button
-              className="flex items-center gap-1.5 shrink-0 hover:opacity-80 transition-opacity"
-              onClick={(e) => { e.stopPropagation(); onOpenExplorer() }}
-            >
-              <Folder size={16} className="text-white/50" />
-              <ChevronUp size={12} className="text-white/40" />
-            </button>
+            {/* ── Right Dropdown (Files + Chats) ────────────────────── */}
+            <div className="relative shrink-0" ref={rightDropdownRef}>
+              <button
+                className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+                onClick={(e) => { e.stopPropagation(); setShowRightDropdown(prev => !prev) }}
+              >
+                <Folder size={16} className="text-white/50" />
+                <ChevronDown size={12} className="text-white/40" />
+              </button>
+
+              {showRightDropdown && (
+                <div
+                  className="absolute top-full right-0 mt-2 rounded-lg overflow-hidden"
+                  style={{
+                    zIndex:          Z.MENU_DROPDOWN,
+                    backgroundColor: 'rgba(20,20,25,0.95)',
+                    border:          '1px solid rgba(255,255,255,0.1)',
+                    backdropFilter:  'blur(12px)',
+                    minWidth:        '140px',
+                  }}
+                >
+                  <button
+                    className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setShowRightDropdown(false); onOpenExplorer() }}
+                  >
+                    <Folder size={14} className="text-white/50 shrink-0" />
+                    <span>Files</span>
+                  </button>
+                  <button
+                    className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setShowRightDropdown(false); onOpenAida() }}
+                  >
+                    <MessageSquare size={14} className="text-white/50 shrink-0" />
+                    <span>Chats</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ── File Results Dropdown ──────────────────────────────────── */}

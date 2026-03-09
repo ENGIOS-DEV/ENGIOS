@@ -1,6 +1,5 @@
-import React from 'react'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Folder, FolderOpen, FileText, ChevronRight, ChevronDown, Home, Circle, ArrowLeft, Image, Film, Music, Code, Archive, FileSpreadsheet  } from 'lucide-react'
+import { Folder, FolderOpen, FileText, ChevronRight, ChevronDown, Home, X, ArrowLeft, Image, Film, Music, Code, Archive, FileSpreadsheet } from 'lucide-react'
 import { Z } from '../zIndex'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -37,7 +36,7 @@ function formatDate(date: Date): string {
   return new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-function getFileIcon(name: string, size = 14): React.ReactElement {
+function getFileIcon(name: string, size = 14) {
   const ext = name.split('.').pop()?.toLowerCase()
   const style = { flexShrink: 0 as const }
   switch (ext) {
@@ -128,6 +127,19 @@ export default function FileExplorer({ isOpen, onClose, accentColor }: FileExplo
   }, [navigateTo])
 
   // ── Drag ────────────────────────────────────────────────────────────────────
+  const WIN_W = 820
+  const WIN_H = 560
+
+  // Reset to safe position on open
+  useEffect(() => {
+    if (isOpen) {
+      setPos({
+        x: Math.max(0, Math.round(window.innerWidth  / 2 - WIN_W / 2)),
+        y: Math.max(0, Math.min(80, window.innerHeight - WIN_H)),
+      })
+    }
+  }, [isOpen])
+
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     setDragging(true)
     dragOffset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y }
@@ -135,12 +147,56 @@ export default function FileExplorer({ isOpen, onClose, accentColor }: FileExplo
 
   useEffect(() => {
     if (!dragging) return
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX - dragOffset.current.x, y: e.clientY - dragOffset.current.y })
-    const onUp   = () => setDragging(false)
+    const onMove = (e: MouseEvent) => {
+      const x = Math.max(0, Math.min(e.clientX - dragOffset.current.x, window.innerWidth  - WIN_W))
+      const y = Math.max(0, Math.min(e.clientY - dragOffset.current.y, window.innerHeight - WIN_H))
+      setPos({ x, y })
+    }
+    const onUp = () => setDragging(false)
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mouseup',   onUp)
     return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
   }, [dragging])
+
+  // ── Sidebar resize state ─────────────────────────────────────────────────────
+  const LEFT_MIN  = 140
+  const LEFT_MAX  = 360
+  const RIGHT_MIN = 180
+  const RIGHT_MAX = 420
+
+  const [leftW,          setLeftW]          = useState(200)
+  const [rightW,         setRightW]         = useState(280)
+  const [resizingLeft,   setResizingLeft]   = useState(false)
+  const [resizingRight,  setResizingRight]  = useState(false)
+  const resizeLeftStartX  = useRef(0)
+  const resizeLeftStartW  = useRef(200)
+  const resizeRightStartX = useRef(0)
+  const resizeRightStartW = useRef(280)
+
+  useEffect(() => {
+    if (!resizingLeft) return
+    const onMove = (e: MouseEvent) => {
+      const delta = e.clientX - resizeLeftStartX.current
+      setLeftW(Math.max(LEFT_MIN, Math.min(LEFT_MAX, resizeLeftStartW.current + delta)))
+    }
+    const onUp = () => setResizingLeft(false)
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup',   onUp)
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
+  }, [resizingLeft])
+
+  useEffect(() => {
+    if (!resizingRight) return
+    const onMove = (e: MouseEvent) => {
+      // Right pane resizes in reverse — dragging left makes it bigger
+      const delta = resizeRightStartX.current - e.clientX
+      setRightW(Math.max(RIGHT_MIN, Math.min(RIGHT_MAX, resizeRightStartW.current + delta)))
+    }
+    const onUp = () => setResizingRight(false)
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup',   onUp)
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
+  }, [resizingRight])
 
   // ── Tree renderer ───────────────────────────────────────────────────────────
   function renderTree(nodes: TreeNode[], depth = 0): React.ReactNode {
@@ -235,7 +291,7 @@ export default function FileExplorer({ isOpen, onClose, accentColor }: FileExplo
             onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
           >
-            <Circle size={12} style={{ color: accentColor }} />
+            <X size={14} />
           </button>
         </div>
 
@@ -245,11 +301,7 @@ export default function FileExplorer({ isOpen, onClose, accentColor }: FileExplo
           {/* ── Left Pane — Folder Tree ───────────────────────────────────── */}
           <div
             className="flex flex-col overflow-y-auto shrink-0"
-            style={{
-              width: '200px',
-              borderRight: '1px solid rgba(255,255,255,0.06)',
-              padding: '8px 4px',
-            }}
+            style={{ width: `${leftW}px`, padding: '8px 4px' }}
           >
             {/* Home shortcut */}
             <button
@@ -264,8 +316,30 @@ export default function FileExplorer({ isOpen, onClose, accentColor }: FileExplo
             {renderTree(tree)}
           </div>
 
+          {/* ── Left divider ────────────────────────────────────────────────── */}
+          <div
+            onMouseDown={e => { e.preventDefault(); setResizingLeft(true); resizeLeftStartX.current = e.clientX; resizeLeftStartW.current = leftW }}
+            style={{
+              width:           '12px',
+              flexShrink:      0,
+              cursor:          'col-resize',
+              display:         'flex',
+              alignItems:      'center',
+              justifyContent:  'center',
+              backgroundColor: resizingLeft ? `${accentColor}12` : 'transparent',
+              borderLeft:      `1px solid ${resizingLeft ? accentColor + '40' : 'rgba(255,255,255,0.06)'}`,
+              borderRight:     `1px solid ${resizingLeft ? accentColor + '40' : 'rgba(255,255,255,0.06)'}`,
+              transition:      'background-color 0.15s, border-color 0.15s',
+              userSelect:      'none',
+            }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.backgroundColor = `${accentColor}12`; el.style.borderLeftColor = `${accentColor}50`; el.style.borderRightColor = `${accentColor}50` }}
+            onMouseLeave={e => { if (resizingLeft) return; const el = e.currentTarget as HTMLDivElement; el.style.backgroundColor = 'transparent'; el.style.borderLeftColor = 'rgba(255,255,255,0.06)'; el.style.borderRightColor = 'rgba(255,255,255,0.06)' }}
+          >
+            <span style={{ fontSize: 9, color: resizingLeft ? accentColor : 'rgba(255,255,255,0.18)', letterSpacing: '-1px', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>&#x2194;</span>
+          </div>
+
           {/* ── Centre Pane — Preview Placeholder ────────────────────────── */}
-          <div className="flex flex-col flex-1 overflow-hidden items-center justify-center" style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="flex flex-col flex-1 overflow-hidden items-center justify-center">
             {selectedFile ? (
               <div className="flex flex-col items-center gap-4 px-8 text-center">
                 {getFileIcon(selectedFile.name, 40)}
@@ -299,8 +373,30 @@ export default function FileExplorer({ isOpen, onClose, accentColor }: FileExplo
             )}
           </div>
 
+          {/* ── Right divider ───────────────────────────────────────────────── */}
+          <div
+            onMouseDown={e => { e.preventDefault(); setResizingRight(true); resizeRightStartX.current = e.clientX; resizeRightStartW.current = rightW }}
+            style={{
+              width:           '12px',
+              flexShrink:      0,
+              cursor:          'col-resize',
+              display:         'flex',
+              alignItems:      'center',
+              justifyContent:  'center',
+              backgroundColor: resizingRight ? `${accentColor}12` : 'transparent',
+              borderLeft:      `1px solid ${resizingRight ? accentColor + '40' : 'rgba(255,255,255,0.06)'}`,
+              borderRight:     `1px solid ${resizingRight ? accentColor + '40' : 'rgba(255,255,255,0.06)'}`,
+              transition:      'background-color 0.15s, border-color 0.15s',
+              userSelect:      'none',
+            }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.backgroundColor = `${accentColor}12`; el.style.borderLeftColor = `${accentColor}50`; el.style.borderRightColor = `${accentColor}50` }}
+            onMouseLeave={e => { if (resizingRight) return; const el = e.currentTarget as HTMLDivElement; el.style.backgroundColor = 'transparent'; el.style.borderLeftColor = 'rgba(255,255,255,0.06)'; el.style.borderRightColor = 'rgba(255,255,255,0.06)' }}
+          >
+            <span style={{ fontSize: 9, color: resizingRight ? accentColor : 'rgba(255,255,255,0.18)', letterSpacing: '-1px', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>&#x2194;</span>
+          </div>
+
           {/* ── Right Pane — File List ────────────────────────────────────── */}
-          <div className="flex flex-col shrink-0 overflow-hidden" style={{ width: '280px' }}>
+          <div className="flex flex-col shrink-0 overflow-hidden" style={{ width: `${rightW}px` }}>
             <div className="flex-1 overflow-y-auto">
               {dirContents.length === 0 ? (
                 <div className="flex items-center justify-center h-full">

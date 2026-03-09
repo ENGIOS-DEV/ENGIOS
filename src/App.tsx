@@ -10,7 +10,6 @@ import ToastNotification from './components/ToastNotification'
 import Terminal from './components/Terminal'
 import FileExplorer from './components/FileExplorer'
 import AidaChat from './components/AidaChat'
-import type { Message } from './helpers/aiProvider'
 import { loadTodayConfig } from './components/TodaySettings'
 import {
   startNotificationService,
@@ -33,18 +32,18 @@ function loadSettings(): GlobalSettings {
 }
 
 function App() {
-  const [settings, setSettings]       = useState<GlobalSettings>(loadSettings)
-  const [isMenuOpen, setIsMenuOpen]   = useState(false)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [settings,        setSettings]        = useState<GlobalSettings>(loadSettings)
+  const [isMenuOpen,      setIsMenuOpen]      = useState(false)
+  const [isSettingsOpen,  setIsSettingsOpen]  = useState(false)
   const [isTerminalOpen,  setIsTerminalOpen]  = useState(false)
   const [isExplorerOpen,  setIsExplorerOpen]  = useState(false)
   const [isAidaOpen,      setIsAidaOpen]      = useState(false)
-  const [aidaMessages,    setAidaMessages]    = useState<Message[]>([])
-  const [alerts, setAlerts]           = useState<AlertState>({ low: false, medium: false, high: false })
-  const [activeToast, setActiveToast] = useState<TaskAlert | null>(null)
-  const autoHideTimer                 = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [aidaInitialMsg,  setAidaInitialMsg]  = useState<string | undefined>(undefined)
+  const [alerts,          setAlerts]          = useState<AlertState>({ low: false, medium: false, high: false })
+  const [activeToast,     setActiveToast]     = useState<TaskAlert | null>(null)
+  const autoHideTimer                          = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Terminal keyboard shortcut — CTRL+`
+  // ── Terminal keyboard shortcut — CTRL+` ──────────────────────────────────────
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === '`') setIsTerminalOpen(prev => !prev)
@@ -53,13 +52,13 @@ function App() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  // Persist settings
+  // ── Persist settings ─────────────────────────────────────────────────────────
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)) }
     catch (e) { console.warn('Failed to save settings:', e) }
   }, [settings])
 
-  // Start notification service
+  // ── Start notification service ───────────────────────────────────────────────
   useEffect(() => {
     onAlertChange(state => setAlerts({ ...state }))
     onToast(alert => {
@@ -70,7 +69,7 @@ function App() {
     return () => stopNotificationService()
   }, [])
 
-  // Auto-hide logic
+  // ── Auto-hide logic ──────────────────────────────────────────────────────────
   const clearAutoHideTimer = useCallback(() => {
     if (autoHideTimer.current) { clearTimeout(autoHideTimer.current); autoHideTimer.current = null }
   }, [])
@@ -107,7 +106,7 @@ function App() {
             onOpenSettings={() => { setIsSettingsOpen(true); clearAutoHideTimer() }}
             onOpenTerminal={() => { setIsTerminalOpen(prev => !prev); setIsMenuOpen(false) }}
             onOpenExplorer={() => { setIsExplorerOpen(true); setIsMenuOpen(false) }}
-            onOpenAida={(msg) => { setIsAidaOpen(true); setIsMenuOpen(false); if (msg) setAidaMessages([{ role: 'user', content: msg }]) }}
+            onOpenAida={(msg) => { setIsAidaOpen(true); setIsMenuOpen(false); if (msg) setAidaInitialMsg(msg) }}
           />
           <MenuBarHandle
             isMenuOpen={isMenuOpen}
@@ -149,8 +148,8 @@ function App() {
           isOpen={isAidaOpen}
           onClose={() => setIsAidaOpen(false)}
           accentColor={settings.accentColor}
-          messages={aidaMessages}
-          onMessages={setAidaMessages}
+          initialMessage={aidaInitialMsg}
+          onConsumeInitial={() => setAidaInitialMsg(undefined)}
         />
 
       </div>

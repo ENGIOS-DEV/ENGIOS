@@ -165,22 +165,11 @@ ipcMain.handle('open-file', async (_, filePath) => {
 })
 
 // ─── Open Provider Window ──────────────────────────────────────────────────
-const providerIcons = {
-  'Gemini':  'gemini.png',
-  'Meta AI': 'meta.png',
-  'Groq':    'groq.png',
-  'Claude':  'claude.png',
-  'ChatGPT': 'openai.png',
-  'Google':  'google.png',
-  'Brave':   'brave.png',
-}
-
 ipcMain.handle('open-provider', async (_, url, label) => {
-  const iconFile = providerIcons[label] || 'aida_logo.png'
   const win = new BrowserWindow({
     width: 1100,
     height: 800,
-    icon: path.join(__dirname, 'src/assets/icons', iconFile),
+    icon: path.join(__dirname, 'src/assets/icons/aida_logo.png'),
     title: label,
     webPreferences: {
       nodeIntegration: false,
@@ -216,6 +205,24 @@ ipcMain.handle('db:events:get',    (_, range)       => db.getEvents(range))
 ipcMain.handle('db:events:create', (_, data)        => db.createEvent(data))
 ipcMain.handle('db:events:update', (_, id, changes) => db.updateEvent(id, changes))
 ipcMain.handle('db:events:delete', (_, id)          => db.deleteEvent(id))
+
+// ── Chat Folders ──────────────────────────────────────────────────────────────
+ipcMain.handle('db:chat:folders:get',    ()                => db.getChatFolders())
+ipcMain.handle('db:chat:folders:create', (_, data)         => db.createChatFolder(data))
+ipcMain.handle('db:chat:folders:update', (_, id, changes)  => db.updateChatFolder(id, changes))
+ipcMain.handle('db:chat:folders:delete', (_, id)           => db.deleteChatFolder(id))
+
+// ── Chat Conversations ────────────────────────────────────────────────────────
+ipcMain.handle('db:chat:conversations:get',    (_, opts)        => db.getChatConversations(opts))
+ipcMain.handle('db:chat:conversations:create', (_, data)        => db.createChatConversation(data))
+ipcMain.handle('db:chat:conversations:update', (_, id, changes) => db.updateChatConversation(id, changes))
+ipcMain.handle('db:chat:conversations:delete', (_, id)          => db.deleteChatConversation(id))
+ipcMain.handle('db:chat:conversations:search', (_, query)       => db.searchChatConversations(query))
+
+// ── Chat Messages ─────────────────────────────────────────────────────────────
+ipcMain.handle('db:chat:messages:get',    (_, conversationId) => db.getChatMessages(conversationId))
+ipcMain.handle('db:chat:messages:add',    (_, data)           => db.addChatMessage(data))
+ipcMain.handle('db:chat:messages:delete', (_, id)             => db.deleteChatMessage(id))
 
 // ─── Create Window ─────────────────────────────────────────────────────────
 function createWindow() {

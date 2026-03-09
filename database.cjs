@@ -53,6 +53,32 @@ function initSchema() {
       created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
       updated_at  TEXT    NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS chat_folders (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      name       TEXT    NOT NULL,
+      position   INTEGER NOT NULL DEFAULT 0,
+      starred    INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS chat_conversations (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      folder_id  INTEGER REFERENCES chat_folders(id) ON DELETE SET NULL,
+      title      TEXT    NOT NULL DEFAULT 'New conversation',
+      model      TEXT    NOT NULL DEFAULT 'phi3mini',
+      pinned     INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      conversation_id INTEGER NOT NULL REFERENCES chat_conversations(id) ON DELETE CASCADE,
+      role            TEXT    NOT NULL CHECK(role IN ('user', 'assistant', 'system')),
+      content         TEXT    NOT NULL DEFAULT '',
+      created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
   `)
 
   // ── Migrations: safely add columns to existing databases ──────────────
@@ -151,6 +177,96 @@ function deleteEvent(id) {
   return { success: true }
 }
 
+// ─── Chat Folders ─────────────────────────────────────────────────────────────
+function getChatFolders() {
+  return getDb().prepare(`
+    SELECT * FROM chat_folders ORDER BY starred DESC, position ASC, created_at ASC
+  `).all()
+}
+
+function createChatFolder({ name, position = 0, starred = 0 } = {}) {
+  const result = getDb().prepare(`
+    INSERT INTO chat_folders (name, position, starred) VALUES (@name, @position, @starred)
+  `).run({ name, position, starred })
+  return getDb().prepare('SELECT * FROM chat_folders WHERE id = ?').get(result.lastInsertRowid)
+}
+
+function updateChatFolder(id, changes) {
+  const fields = Object.keys(changes).map(k => `${k} = @${k}`).join(', ')
+  getDb().prepare(`UPDATE chat_folders SET ${fields} WHERE id = @id`).run({ ...changes, id })
+  return getDb().prepare('SELECT * FROM chat_folders WHERE id = ?').get(id)
+}
+
+function deleteChatFolder(id) {
+  getDb().prepare('DELETE FROM chat_folders WHERE id = ?').run(id)
+  return { success: true }
+}
+
+// ─── Chat Conversations ───────────────────────────────────────────────────────
+function getChatConversations({ folderId } = {}) {
+  if (folderId !== undefined) {
+    return getDb().prepare(`
+      SELECT * FROM chat_conversations
+      WHERE folder_id ${folderId === null ? 'IS NULL' : '= @folderId'}
+      ORDER BY pinned DESC, updated_at DESC
+    `).all(folderId === null ? {} : { folderId })
+  }
+  return getDb().prepare(`
+    SELECT * FROM chat_conversations ORDER BY pinned DESC, updated_at DESC
+  `).all()
+}
+
+function createChatConversation({ title = 'New conversation', folder_id = null, model = 'phi3mini', pinned = 0 } = {}) {
+  const result = getDb().prepare(`
+    INSERT INTO chat_conversations (title, folder_id, model, pinned)
+    VALUES (@title, @folder_id, @model, @pinned)
+  `).run({ title, folder_id, model, pinned })
+  return getDb().prepare('SELECT * FROM chat_conversations WHERE id = ?').get(result.lastInsertRowid)
+}
+
+function updateChatConversation(id, changes) {
+  const fields = Object.keys(changes).map(k => `${k} = @${k}`).join(', ')
+  getDb().prepare(`
+    UPDATE chat_conversations SET ${fields}, updated_at = datetime('now') WHERE id = @id
+  `).run({ ...changes, id })
+  return getDb().prepare('SELECT * FROM chat_conversations WHERE id = ?').get(id)
+}
+
+function deleteChatConversation(id) {
+  getDb().prepare('DELETE FROM chat_conversations WHERE id = ?').run(id)
+  return { success: true }
+}
+
+function searchChatConversations(query) {
+  return getDb().prepare(`
+    SELECT DISTINCT c.* FROM chat_conversations c
+    LEFT JOIN chat_messages m ON m.conversation_id = c.id
+    WHERE c.title LIKE @q OR m.content LIKE @q
+    ORDER BY c.updated_at DESC
+  `).all({ q: `%${query}%` })
+}
+
+// ─── Chat Messages ────────────────────────────────────────────────────────────
+function getChatMessages(conversationId) {
+  return getDb().prepare(`
+    SELECT * FROM chat_messages WHERE conversation_id = ? ORDER BY created_at ASC
+  `).all(conversationId)
+}
+
+function addChatMessage({ conversation_id, role, content }) {
+  const result = getDb().prepare(`
+    INSERT INTO chat_messages (conversation_id, role, content) VALUES (@conversation_id, @role, @content)
+  `).run({ conversation_id, role, content })
+  // bump conversation updated_at
+  getDb().prepare(`UPDATE chat_conversations SET updated_at = datetime('now') WHERE id = ?`).run(conversation_id)
+  return getDb().prepare('SELECT * FROM chat_messages WHERE id = ?').get(result.lastInsertRowid)
+}
+
+function deleteChatMessage(id) {
+  getDb().prepare('DELETE FROM chat_messages WHERE id = ?').run(id)
+  return { success: true }
+}
+
 // ─── Exports ──────────────────────────────────────────────────────────────────
 module.exports = {
   // Notes
@@ -159,4 +275,11 @@ module.exports = {
   getTasks, createTask, updateTask, deleteTask,
   // Events
   getEvents, createEvent, updateEvent, deleteEvent,
+  // Chat Folders
+  getChatFolders, createChatFolder, updateChatFolder, deleteChatFolder,
+  // Chat Conversations
+  getChatConversations, createChatConversation, updateChatConversation,
+  deleteChatConversation, searchChatConversations,
+  // Chat Messages
+  getChatMessages, addChatMessage, deleteChatMessage,
 }
