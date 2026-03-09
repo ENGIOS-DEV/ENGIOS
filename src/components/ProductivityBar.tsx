@@ -1,17 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { CornerDownLeft, ChevronDown, ChevronUp, FileText, Folder } from 'lucide-react'
-import geminiIcon from '../assets/icons/gemini.svg'
-import metaIcon   from '../assets/icons/meta.svg'
-import groqIcon   from '../assets/icons/groq.svg'
-import claudeIcon from '../assets/icons/claude.svg'
-import openaiIcon from '../assets/icons/openai.svg'
-import googleIcon from '../assets/icons/google.svg'
-import braveIcon  from '../assets/icons/brave.svg'
 import type { GlobalSettings } from '../types/settings'
 import type { SearchResult } from '../services/fileSearchService'
 import { FileSearchService } from '../services/fileSearchService'
-import { sendMessage } from '../helpers/aiProvider'
-import type { Message } from '../helpers/aiProvider'
 import { Z } from '../zIndex'
 
 // ─── Extend Window type for Electron bridge ───────────────────────────────────
@@ -47,16 +38,16 @@ declare global {
 
 // ─── Provider Definitions ─────────────────────────────────────────────────────
 const aiProviders = [
-  { id: 'gemini', label: 'Gemini',  icon: geminiIcon, url: 'https://gemini.google.com/app' },
-  { id: 'meta',   label: 'Meta AI', icon: metaIcon,   url: 'https://www.meta.ai'          },
-  { id: 'groq',   label: 'Groq',    icon: groqIcon,   url: 'https://chat.groq.com'        },
-  { id: 'claude', label: 'Claude',  icon: claudeIcon, url: 'https://claude.ai'            },
-  { id: 'openai', label: 'ChatGPT', icon: openaiIcon, url: 'https://chatgpt.com'          },
+  { id: 'gemini', label: 'Gemini',  icon: '/src/assets/icons/gemini.svg', url: 'https://gemini.google.com/app' },
+  { id: 'meta',   label: 'Meta AI', icon: '/src/assets/icons/meta.svg',   url: 'https://www.meta.ai'          },
+  { id: 'groq',   label: 'Groq',    icon: '/src/assets/icons/groq.svg',   url: 'https://chat.groq.com'        },
+  { id: 'claude', label: 'Claude',  icon: '/src/assets/icons/claude.svg', url: 'https://claude.ai'            },
+  { id: 'openai', label: 'ChatGPT', icon: '/src/assets/icons/openai.svg', url: 'https://chatgpt.com'          },
 ]
 
 const webProviders = [
-  { id: 'google', label: 'Google', icon: googleIcon, url: 'https://www.google.com'   },
-  { id: 'brave',  label: 'Brave',  icon: braveIcon,  url: 'https://search.brave.com' },
+  { id: 'google', label: 'Google', icon: '/src/assets/icons/google.svg', url: 'https://www.google.com'   },
+  { id: 'brave',  label: 'Brave',  icon: '/src/assets/icons/brave.svg',  url: 'https://search.brave.com' },
 ]
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -64,10 +55,11 @@ interface ProductivityBarProps {
   settings:       GlobalSettings
   isMenuOpen:     boolean
   onOpenExplorer: () => void
+  onOpenAida:     (firstMessage?: string) => void
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
-function ProductivityBar({ settings, isMenuOpen, onOpenExplorer }: ProductivityBarProps) {
+function ProductivityBar({ settings, isMenuOpen, onOpenExplorer, onOpenAida }: ProductivityBarProps) {
   const accentColor = settings.accentColor
 
   // ── Input & search state ─────────────────────────────────────────────────────
@@ -79,26 +71,9 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer }: ProductivityB
   const [isSearching,    setIsSearching]    = useState(false)
 
   // ── AIDA chat state (persists across open/close) ─────────────────────────────
-  const [aidaMessages,   setAidaMessages]   = useState<Message[]>([])
-  const [aidaInput,      setAidaInput]      = useState('')
-  const [aidaOpen,       setAidaOpen]       = useState(false)
-  const [aidaThinking,   setAidaThinking]   = useState(false)
-
   const inputRef        = useRef<HTMLInputElement>(null)
-  const aidaInputRef    = useRef<HTMLInputElement>(null)
   const dropdownRef     = useRef<HTMLDivElement>(null)
   const fileResultsRef  = useRef<HTMLDivElement>(null)
-  const messagesEndRef  = useRef<HTMLDivElement>(null)
-
-  // ── Auto scroll AIDA messages ────────────────────────────────────────────────
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [aidaMessages])
-
-  // ── Focus AIDA input when chat opens ────────────────────────────────────────
-  useEffect(() => {
-    if (aidaOpen) setTimeout(() => aidaInputRef.current?.focus(), 50)
-  }, [aidaOpen])
 
   // ── Close file results on outside click ─────────────────────────────────────
   useEffect(() => {
@@ -140,12 +115,11 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer }: ProductivityB
     const text = input.trim()
     if (!text) return
 
-    // ? prefix → open AIDA chat and send first message
+    // ? prefix → open AIDA chat
     if (text.startsWith('?')) {
       const question = text.slice(1).trim()
       setInput('')
-      setAidaOpen(true)
-      if (question) sendToAida(question)
+      onOpenAida(question || undefined)
       return
     }
 
@@ -157,48 +131,9 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer }: ProductivityB
     setIsSearching(false)
   }
 
-  // ── Send message to AIDA ─────────────────────────────────────────────────────
-  async function sendToAida(text: string) {
-    const userMessage: Message = { role: 'user', content: text }
-    const updatedMessages = [...aidaMessages, userMessage]
-    setAidaMessages(updatedMessages)
-    setAidaThinking(true)
 
-    const assistantMessage: Message = { role: 'assistant', content: '' }
-    setAidaMessages(prev => [...prev, assistantMessage])
 
-    try {
-      await sendMessage(updatedMessages, (chunk) => {
-        setAidaMessages(prev => {
-          const updated = [...prev]
-          updated[updated.length - 1] = {
-            ...updated[updated.length - 1],
-            content: updated[updated.length - 1].content + chunk,
-          }
-          return updated
-        })
-      })
-    } catch {
-      setAidaMessages(prev => {
-        const updated = [...prev]
-        updated[updated.length - 1] = {
-          role: 'assistant',
-          content: 'I encountered an error. Please check that Ollama is running.',
-        }
-        return updated
-      })
-    }
 
-    setAidaThinking(false)
-  }
-
-  // ── Handle AIDA follow-up input ──────────────────────────────────────────────
-  async function handleAidaSubmit() {
-    const text = aidaInput.trim()
-    if (!text || aidaThinking) return
-    setAidaInput('')
-    await sendToAida(text)
-  }
 
   // ── Keyboard handlers ────────────────────────────────────────────────────────
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -206,22 +141,11 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer }: ProductivityB
     if (e.key === 'Escape') {
       setShowDropdown(false)
       setShowFileResults(false)
-      setAidaOpen(false)
     }
   }
 
-  function handleAidaKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleAidaSubmit()
-    }
-    if (e.key === 'Escape') setAidaOpen(false)
-  }
 
-  // ── Dynamic placeholder ──────────────────────────────────────────────────────
-  const placeholder = aidaOpen
-    ? 'Search files, or type ? to ask AIDA...'
-    : 'Search files and folders, or start with ? to ask AIDA...'
+
 
   return (
     <>
@@ -312,7 +236,7 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer }: ProductivityB
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={placeholder}
+              placeholder="Search files and folders, or type ? to ask AIDA..."
               className="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-white/30"
             />
 
@@ -376,108 +300,11 @@ function ProductivityBar({ settings, isMenuOpen, onOpenExplorer }: ProductivityB
               ))}
             </div>
           )}
-
-          {/* ── AIDA Chat Panel ───────────────────────────────────────────── */}
-          {aidaOpen && (
-            <div
-              className="absolute top-full left-0 right-0 mt-1 rounded-xl flex flex-col overflow-hidden"
-              style={{
-                zIndex:               Z.AIDA_CHAT,
-                height:               '60vh',
-                backgroundColor:      'rgba(13,17,23,0.97)',
-                backdropFilter:       'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                border:               `1px solid ${accentColor}33`,
-                boxShadow:            `0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px ${accentColor}11`,
-              }}
-            >
-              {/* ── Chat Title Bar ─────────────────────────────────────── */}
-              <div
-                className="flex items-center justify-between px-4 py-2.5 shrink-0"
-                style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-              >
-                {aidaMessages.length > 0 && (
-                  <button
-                    onClick={() => setAidaMessages([])}
-                    className="text-xs text-white/20 hover:text-white/50 transition-colors"
-                    style={{ fontFamily: 'DM Mono, monospace' }}
-                  >
-                    clear
-                  </button>
-                )}
-              </div>
-
-              {/* ── Messages ───────────────────────────────────────────── */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
-                {aidaMessages.length === 0 && (
-                  <div className="flex-1 flex items-center justify-center h-full">
-                    <span
-                      className="text-xs text-center"
-                      style={{ color: 'rgba(255,255,255,0.2)', fontFamily: 'DM Mono, monospace' }}
-                    >
-                      How can I help you today?
-                    </span>
-                  </div>
-                )}
-
-                {aidaMessages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className="max-w-[75%] px-4 py-2.5 rounded-xl text-sm leading-relaxed"
-                      style={msg.role === 'user' ? {
-                        backgroundColor: accentColor + '22',
-                        border:          `1px solid ${accentColor}33`,
-                        color:           'rgba(255,255,255,0.9)',
-                      } : {
-                        backgroundColor: 'rgba(255,255,255,0.04)',
-                        border:          '1px solid rgba(255,255,255,0.07)',
-                        color:           'rgba(255,255,255,0.75)',
-                      }}
-                    >
-                      {msg.content || (
-                        <span style={{ color: accentColor, opacity: 0.5 }}>thinking...</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* ── AIDA Input ─────────────────────────────────────────── */}
-              <div
-                className="flex items-center gap-3 px-4 py-3 shrink-0"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-              >
-                <input
-                  ref={aidaInputRef}
-                  type="text"
-                  value={aidaInput}
-                  onChange={e => setAidaInput(e.target.value)}
-                  onKeyDown={handleAidaKeyDown}
-                  placeholder="Continue the conversation..."
-                  disabled={aidaThinking}
-                  className="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-white/25"
-                />
-                <button
-                  onClick={handleAidaSubmit}
-                  disabled={aidaThinking || !aidaInput.trim()}
-                  className="shrink-0 transition-colors"
-                  style={{ color: aidaInput.trim() && !aidaThinking ? accentColor : 'rgba(255,255,255,0.15)' }}
-                >
-                  <CornerDownLeft size={16} />
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* ── Hint text ─────────────────────────────────────────────────── */}
         <p className="text-xs text-white/25 text-center">
-          Select your favorite AI provider for current events &amp; online access
+          Select your favorite AI provider for current events & online access · type <span style={{ color: accentColor }}>?</span> to ask AIDA
         </p>
 
       </div>

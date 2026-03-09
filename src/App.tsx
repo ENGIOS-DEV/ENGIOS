@@ -9,6 +9,8 @@ import ClockWeatherWidget from './components/ClockWeatherWidget'
 import ToastNotification from './components/ToastNotification'
 import Terminal from './components/Terminal'
 import FileExplorer from './components/FileExplorer'
+import AidaChat from './components/AidaChat'
+import type { Message } from './helpers/aiProvider'
 import { loadTodayConfig } from './components/TodaySettings'
 import {
   startNotificationService,
@@ -36,6 +38,8 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isTerminalOpen,  setIsTerminalOpen]  = useState(false)
   const [isExplorerOpen,  setIsExplorerOpen]  = useState(false)
+  const [isAidaOpen,      setIsAidaOpen]      = useState(false)
+  const [aidaMessages,    setAidaMessages]    = useState<Message[]>([])
   const [alerts, setAlerts]           = useState<AlertState>({ low: false, medium: false, high: false })
   const [activeToast, setActiveToast] = useState<TaskAlert | null>(null)
   const autoHideTimer                 = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -103,6 +107,7 @@ function App() {
             onOpenSettings={() => { setIsSettingsOpen(true); clearAutoHideTimer() }}
             onOpenTerminal={() => { setIsTerminalOpen(prev => !prev); setIsMenuOpen(false) }}
             onOpenExplorer={() => { setIsExplorerOpen(true); setIsMenuOpen(false) }}
+            onOpenAida={(msg) => { setIsAidaOpen(true); setIsMenuOpen(false); if (msg) setAidaMessages([{ role: 'user', content: msg }]) }}
           />
           <MenuBarHandle
             isMenuOpen={isMenuOpen}
@@ -138,6 +143,14 @@ function App() {
           isOpen={isExplorerOpen}
           onClose={() => setIsExplorerOpen(false)}
           accentColor={settings.accentColor}
+        />
+
+        <AidaChat
+          isOpen={isAidaOpen}
+          onClose={() => setIsAidaOpen(false)}
+          accentColor={settings.accentColor}
+          messages={aidaMessages}
+          onMessages={setAidaMessages}
         />
 
       </div>

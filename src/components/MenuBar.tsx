@@ -16,6 +16,7 @@ interface MenuBarProps {
   onOpenSettings: () => void
   onOpenTerminal: () => void
   onOpenExplorer: () => void
+  onOpenAida:     (firstMessage?: string) => void
 }
 
 const notifications = [
@@ -36,7 +37,7 @@ const PRIORITY_DOT: Record<string, string> = {
   high:   'bg-red-400',
 }
 
-function MenuBar({ isOpen, settings, onOpenSettings, onOpenTerminal, onOpenExplorer }: MenuBarProps) {
+function MenuBar({ isOpen, settings, onOpenSettings, onOpenTerminal, onOpenExplorer, onOpenAida }: MenuBarProps) {
   const menuStyle        = getMenuStyle(settings)
   const transitionDuration = getTransitionDuration(settings)
   const scale            = fontScales[settings.fontSize]
@@ -212,7 +213,7 @@ function MenuBar({ isOpen, settings, onOpenSettings, onOpenTerminal, onOpenExplo
         {/* ── End Centering Wrapper ─────────────────────────────────── */}
 
         {/* ── Productivity Bar ──────────────────────────────────────────── */}
-        <ProductivityBar settings={settings} isMenuOpen={isOpen} onOpenExplorer={onOpenExplorer} />
+        <ProductivityBar settings={settings} isMenuOpen={isOpen} onOpenExplorer={onOpenExplorer} onOpenAida={onOpenAida} />
 
         {/* ── Bottom handle indicator ───────────────────────────────────── */}
         <div className="flex justify-center py-2">
