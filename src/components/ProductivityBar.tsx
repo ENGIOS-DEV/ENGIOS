@@ -37,17 +37,25 @@ declare global {
 }
 
 // ─── Provider Definitions ─────────────────────────────────────────────────────
+import geminiIcon from '../assets/icons/gemini.svg'
+import metaIcon   from '../assets/icons/meta.svg'
+import groqIcon   from '../assets/icons/groq.svg'
+import claudeIcon from '../assets/icons/claude.svg'
+import openaiIcon from '../assets/icons/openai.svg'
+import googleIcon from '../assets/icons/google.svg'
+import braveIcon  from '../assets/icons/brave.svg'
+
 const aiProviders = [
-  { id: 'gemini', label: 'Gemini',  icon: '/src/assets/icons/gemini.svg', url: 'https://gemini.google.com/app' },
-  { id: 'meta',   label: 'Meta AI', icon: '/src/assets/icons/meta.svg',   url: 'https://www.meta.ai'          },
-  { id: 'groq',   label: 'Groq',    icon: '/src/assets/icons/groq.svg',   url: 'https://chat.groq.com'        },
-  { id: 'claude', label: 'Claude',  icon: '/src/assets/icons/claude.svg', url: 'https://claude.ai'            },
-  { id: 'openai', label: 'ChatGPT', icon: '/src/assets/icons/openai.svg', url: 'https://chatgpt.com'          },
+  { id: 'gemini', label: 'Gemini',  icon: geminiIcon, url: 'https://gemini.google.com/app' },
+  { id: 'meta',   label: 'Meta AI', icon: metaIcon,   url: 'https://www.meta.ai'          },
+  { id: 'groq',   label: 'Groq',    icon: groqIcon,   url: 'https://chat.groq.com'        },
+  { id: 'claude', label: 'Claude',  icon: claudeIcon, url: 'https://claude.ai'            },
+  { id: 'openai', label: 'ChatGPT', icon: openaiIcon, url: 'https://chatgpt.com'          },
 ]
 
 const webProviders = [
-  { id: 'google', label: 'Google', icon: '/src/assets/icons/google.svg', url: 'https://www.google.com'   },
-  { id: 'brave',  label: 'Brave',  icon: '/src/assets/icons/brave.svg',  url: 'https://search.brave.com' },
+  { id: 'google', label: 'Google', icon: googleIcon, url: 'https://www.google.com'   },
+  { id: 'brave',  label: 'Brave',  icon: braveIcon,  url: 'https://search.brave.com' },
 ]
 
 // ─── Props ────────────────────────────────────────────────────────────────────
