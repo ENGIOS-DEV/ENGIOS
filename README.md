@@ -2,7 +2,6 @@
 
 <img src="src/assets/icons/ENGIOS_logo_text.png" alt="ENGIOS Logo" width="120" />
 
-# ENGIOS
 ### Engineered Intelligent OS
 
 *Because machines deserve to live longer too.*
