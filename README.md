@@ -112,7 +112,7 @@ All editions share a single hardened core — same kernel, same security model, 
 
 ## The Test Machine
 
-Every line of ENGIOS is written and tested on a **donated HP Pavilion 250 G6 (2017)**.
+Every line of ENGIOS is written and tested on a **HP Pavilion 250 G6 (2017)**.
 
 | Spec | Detail |
 |------|--------|
