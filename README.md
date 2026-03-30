@@ -1,6 +1,6 @@
 <div align="center">
 
-![ENGIOS Logo](os/assets/icons/ENGIOS_logo_text.png)
+![ENGIOS Logo](/os/assets/icons/ENGIOS_logo_text.png)
 
 # ENGIOS — Engineered Intelligent OS
 
