@@ -86,7 +86,7 @@ Different ENGIOS editions run different model sizes, scaled to available hardwar
 
 ## The Test Machine
 
-ENGIOS is developed and tested on a **donated HP Pavilion 250 G6 (2017)**.
+ENGIOS is developed and tested on a **HP Pavilion 250 G6 (2017)**.
 
 | Spec | Detail |
 |------|--------|
