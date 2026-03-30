@@ -1,0 +1,200 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   AIDA-2 — src/index.css
+   Global CSS — variable defaults and resets ONLY.
+
+   Rules:
+     - No component styles here — ever
+     - No layout — ever
+     - Every --variable defined here must also be written by applyGlobal.ts
+     - Defaults here are the dark theme at medium font size — the safe fallback
+       before applyGlobal() fires on first render
+     - If you add a variable to applyGlobal.ts — add its default here too
+═══════════════════════════════════════════════════════════════════════════════ */
+
+@import "tailwindcss";
+
+/* ─── CSS Variable Defaults ──────────────────────────────────────────────── */
+/* Dark theme defaults. All overwritten at runtime by applyGlobal().          */
+
+/* ─── CSS Variables ───────────────────────────────────────────────────────────
+   All CSS variables are written at runtime by applyGlobal() in src/global/applyGlobal.ts
+   Do not add colour or typography defaults here — they live in palette.ts and typography.ts
+────────────────────────────────────────────────────────────────────────────── */
+
+/* ─── Range Input — Global Reset ─────────────────────────────────────────────
+   Strips ALL browser default styling from every slider in the system.
+   Consistent appearance across all panels, widgets, and settings.
+   Track colour is controlled via accentColor on the element itself.
+────────────────────────────────────────────────────────────────────────────── */
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance:         none;
+  background:         transparent;
+  outline:            none;
+  border:             none;
+  padding:            0;
+  margin:             0;
+  height:             20px;
+  cursor:             default;
+}
+
+/* ── Track ── */
+input[type='range']::-webkit-slider-runnable-track {
+  height:        8px;
+  border-radius: 9999px;
+  background:    rgba(255, 255, 255, 0.12);
+  border:        none;
+  outline:       none;
+}
+
+input[type='range']::-moz-range-track {
+  height:        8px;
+  border-radius: 9999px;
+  background:    rgba(255, 255, 255, 0.12);
+  border:        none;
+  outline:       none;
+}
+
+/* ── Thumb ── */
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance:         none;
+  width:              12px;
+  height:             12px;
+  border-radius:      9999px;
+  background:         var(--color-accent, #3982F4);
+  border:             none;
+  outline:            none;
+  margin-top:         -2px;
+  box-shadow:         0 0 0 4px var(--color-bg-base, #0D1117),
+                      0 0 0 6px var(--color-accent, #3982F4);
+  transition:         transform 100ms ease;
+}
+
+input[type='range']::-moz-range-thumb {
+  width:         12px;
+  height:        12px;
+  border-radius: 9999px;
+  background:    var(--color-accent, #3982F4);
+  border:        none;
+  outline:       none;
+  box-shadow:    0 0 0 4px var(--color-bg-base, #0D1117),
+                 0 0 0 6px var(--color-accent, #3982F4);
+}
+
+input[type='range']::-webkit-slider-thumb:active {
+  transform: scale(1.1);
+}
+
+/* ── Focus — no ring ── */
+input[type='range']:focus {
+  outline: none;
+  border:  none;
+}
+
+input[type='range']:focus-visible {
+  outline: none;
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing:  border-box;
+  user-select: none;
+
+  /* ENGIOS cursor rule — the OS cursor never changes.
+     Interactive elements communicate state through colour, scale,
+     and opacity — never cursor shape. No exceptions. */
+  cursor: inherit !important;
+}
+
+html,
+body,
+#root {
+  margin:     0;
+  padding:    0;
+  width:      100%;
+  height:     100%;
+  overflow:   visible;
+  cursor:     default;
+  background: transparent;
+  color:      var(--color-text-primary);
+  font-size:  var(--font-size-base);
+  font-family: var(--font-family-main);
+  line-height: var(--line-height-normal);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+/* Thin, unobtrusive scrollbars consistent across all surfaces. */
+
+::-webkit-scrollbar {
+  width:  8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background:    rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ─── Date & Time Picker ─────────────────────────────────────────────────── */
+/* Replaces the harsh OS-default blue highlight with soft accent styling. */
+
+::-webkit-datetime-edit-fields-wrapper {
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-datetime-edit-year-field:focus,
+::-webkit-datetime-edit-month-field:focus,
+::-webkit-datetime-edit-day-field:focus,
+::-webkit-datetime-edit-hour-field:focus,
+::-webkit-datetime-edit-minute-field:focus,
+::-webkit-datetime-edit-second-field:focus,
+::-webkit-datetime-edit-ampm-field:focus {
+  background:    rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xs);
+  color:         white;
+  outline:       none;
+}
+
+::-webkit-calendar-picker-indicator {
+  opacity:       0.35;
+  border-radius: var(--radius-xs);
+  padding:       2px;
+  transition:    opacity var(--motion-speed) var(--motion-ease);
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  opacity:    0.65;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Handle Breathing Animation ────────────────────────────────────────────── */
+/* Subtle scale pulse applied to the handle pill on hover.                       */
+/* Defined here — the only place @keyframes can live.                            */
+/* Applied via handle.ts getHandleBreathingStyle() → Handle.tsx                  */
+
+@keyframes handle-breathe {
+  0%   { transform: scale(1);    }
+  50%  { transform: scale(0.85); }
+  100% { transform: scale(1);    }
+}

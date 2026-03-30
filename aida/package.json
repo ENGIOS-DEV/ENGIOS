@@ -1,0 +1,54 @@
+{
+  "name": "aida-2",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AIDA-2 \u2014 Clean architectural rebuild",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "electron": "cross-env NODE_ENV=development electron .",
+    "build": "vite build",
+    "dist": "npm run build && npx electron-builder --win"
+  },
+  "dependencies": {
+    "@bybas/weather-icons": "^2.0.0",
+    "better-sqlite3": "^12.6.2",
+    "lucide-react": "^0.575.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "systeminformation": "^5.31.4",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.10.13",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "cross-env": "^10.1.0",
+    "electron": "^40.6.0",
+    "electron-builder": "^22.14.13",
+    "electron-rebuild": "^3.2.9",
+    "tailwindcss": "^4.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1"
+  },
+  "build": {
+    "appId": "dev.engios.aida",
+    "productName": "AIDA",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "bridge/**/*",
+      "database/**/*",
+      "src/assets/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/icons/system/engios_logo.png"
+    }
+  }
+}
