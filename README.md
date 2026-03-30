@@ -105,8 +105,7 @@ All editions share a single hardened core — same kernel, same security model, 
 | Edition | Target | Character |
 |---------|--------|-----------|
 | **Personal** | Everyday users | Calm, simple, capable. *~ relief ~* |
-| **Gaming** | Performance users | GPU-optimised. Controller-ready. *~ freedom ~* |
-| **Productivity** | Developers & creators | Power tools, deep workflow. |
+| **Performance** | Gamers, creators & power users | Powerful, responsive, unleashed. *~ freedom ~* |
 | **Enterprise** | Businesses | LTS, managed, auditable, compliant. *~ confidence ~* |
 
 ---
