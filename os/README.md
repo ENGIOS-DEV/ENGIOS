@@ -79,14 +79,14 @@ Different ENGIOS editions run different model sizes, scaled to available hardwar
 | Edition | Model | Target Hardware |
 |---------|-------|----------------|
 | Personal | Phi-3 Mini 3.8B (4-bit) | Modest — 8GB RAM, CPU-only |
-| Gaming / Productivity | Mistral 7B / Llama 3.1 8B | Mid to high range |
+| Performance | Mistral 7B / Llama 3.1 8B | Mid to high range |
 | Enterprise | Llama 3.1 70B quantised | Server grade |
 
 ---
 
 ## The Test Machine
 
-ENGIOS is developed and tested on a **donated HP Pavilion 250 G6 (2017)**.
+ENGIOS is developed and tested on a **HP Pavilion 250 G6 (2017)**.
 
 | Spec | Detail |
 |------|--------|

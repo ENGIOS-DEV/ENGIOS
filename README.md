@@ -1,6 +1,6 @@
 <div align="center">
 
-![ENGIOS Logo](/os/assets/icons/ENGIOS_logo_text.png)
+<img src="os/assets/icons/system/engios_logo_text.png" width="300" alt="ENGIOS Logo" />
 
 # ENGIOS — Engineered Intelligent OS
 
@@ -105,15 +105,14 @@ All editions share a single hardened core — same kernel, same security model, 
 | Edition | Target | Character |
 |---------|--------|-----------|
 | **Personal** | Everyday users | Calm, simple, capable. *~ relief ~* |
-| **Gaming** | Performance users | GPU-optimised. Controller-ready. *~ freedom ~* |
-| **Productivity** | Developers & creators | Power tools, deep workflow. |
+| **Performance** | Gamers, creators & power users | Powerful, responsive, unleashed. *~ freedom ~* |
 | **Enterprise** | Businesses | LTS, managed, auditable, compliant. *~ confidence ~* |
 
 ---
 
 ## The Test Machine
 
-Every line of ENGIOS is written and tested on a **donated HP Pavilion 250 G6 (2017)**.
+Every line of ENGIOS is written and tested on a **HP Pavilion 250 G6 (2017)**.
 
 | Spec | Detail |
 |------|--------|
