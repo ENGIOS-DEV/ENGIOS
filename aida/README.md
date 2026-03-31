@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src/assets/icons/system/aida_logo_text.png" width="300" alt="AIDA Logo" />
+<img src="src/assets/icons/system/aida_logo_text.png" width="200" alt="AIDA Logo" />
 
 # Artificially Intelligent Desktop Assistant
 
