@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="os/assets/icons/system/engios_logo_text.png" width="300" alt="ENGIOS Logo" />
+<img src="os/assets/icons/system/engios_logo_text.png" width="200" alt="ENGIOS Logo" />
 
-# ENGIOS — OS Backbone
+# OS Backbone
 
 ### Debian 13 · Ollama · Phi-3 Mini
 
