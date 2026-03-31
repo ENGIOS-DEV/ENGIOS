@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="os/assets/icons/system/engios_logo_text.png" width="200" alt="ENGIOS Logo" />
+<img src="assets/icons/system/engios_logo_text.png" width="200" alt="ENGIOS Logo" />
 
 # OS Backbone
 
