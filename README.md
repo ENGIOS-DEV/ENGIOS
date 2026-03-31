@@ -135,7 +135,7 @@ MIT — see [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-*ENGIOS — Engineered Intelligent OS · [engios.dev](https://engios.dev)*
+*ENGIOS — Engineered Intelligent OS · <a href="https://engios.dev" target="_blank">engios.dev</a>*
 
 **Sovereignty. Restored.**
 

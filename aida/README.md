@@ -1,6 +1,6 @@
 <div align="center">
 
-![ENGIOS Logo](src/assets/icons/ENGIOS_logo_text.png)
+<img src="aida/src/assets/icons/system/aida_logo_text.png" width="300" alt="AIDA Logo" />
 
 # AIDA — Artificial Intelligence Desktop Assistant
 
@@ -257,7 +257,7 @@ Read [`BLUEPRINT.md`](BLUEPRINT.md) before touching any code. Every architectura
 
 <div align="center">
 
-*ENGIOS — Engineered Intelligent OS · [engios.dev](https://engios.dev)*
+*ENGIOS — Engineered Intelligent OS · <a href="https://engios.dev" target="_blank">engios.dev</a>*
 
 **Sovereignty. Restored.**
 
