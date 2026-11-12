@@ -4,8 +4,9 @@
 //
 // Responsibility:
 //   Clock and weather display widget.
-//   Draggable. Right-click context menu for settings and position lock.
-//   Sends window:fit after every render so Electron keeps the window
+//   Draggable in its standalone window; fixed in the integrated main panel.
+//   Right-click opens the owning surface's settings action.
+//   Standalone hosts measure content so Electron keeps their window
 //   sized to match actual content.
 //
 // Adapted from AIDA-1 ClockWeatherWidget — weather fetch + display logic
@@ -14,7 +15,7 @@
 // Rules:
 //   - Zero style definitions — all from src/themes/widget.ts
 //   - No hardcoded colours, sizes, or spacing
-//   - Sends window:fit on every size change — never a fixed window size
+//   - Standalone hosts measure size changes; embedded mode uses panel layout
 //
 // Import depth: widgets/clock-weather/ → depth 3 → ../../../
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -26,6 +27,7 @@ import {
   getWidgetWindowStyle,
   getWidgetContainerStyle,
   getWidgetColumnStyle,
+  getWidgetWeatherColumnStyle,
   getWidgetRowStyle,
   getWidgetPrimaryTextStyle,
   getWidgetSecondaryTextStyle,
@@ -57,7 +59,8 @@ import notAvailable      from '@bybas/weather-icons/production/fill/all/not-avai
 interface ClockWeatherWidgetProps {
   settings:      GlobalSettings
   clockSettings: ClockSettings
-  onMeasure:     () => void
+  onMeasure?:    () => void
+  embedded?:     boolean
   onContextMenu: (x: number, y: number) => void
 }
 
@@ -139,6 +142,7 @@ export default function ClockWeatherWidget({
   settings,
   clockSettings,
   onMeasure,
+  embedded = false,
   onContextMenu,
 }: ClockWeatherWidgetProps) {
 
@@ -207,16 +211,16 @@ export default function ClockWeatherWidget({
 
   // ── Trigger measure on weather load ──────────────────────────────────────
   useEffect(() => {
-    if (weather) onMeasure()
+    if (weather) onMeasure?.()
   }, [weather, onMeasure])
 
   // ── Drag ───────────────────────────────────────────────────────────────────
   const onMouseDown = useCallback((e: React.MouseEvent) => {
-    if (clockSettings.positionLocked) return
+    if (embedded || clockSettings.positionLocked) return
     if (e.button !== 0) return
     setDragging(true)
     dragOffset.current = { x: e.screenX, y: e.screenY }
-  }, [clockSettings.positionLocked])
+  }, [embedded, clockSettings.positionLocked])
 
   useEffect(() => {
     if (!dragging) return
@@ -257,14 +261,14 @@ export default function ClockWeatherWidget({
       {/* ── Widget body ───────────────────────────────────────────────────── */}
       <div
         style={{
-          ...getWidgetWindowStyle(settings, clockSettings),
+          ...getWidgetWindowStyle(settings, clockSettings, embedded),
           ...getWidgetDragStyle(dragging),
         }}
         onMouseDown={onMouseDown}
         onContextMenu={e => { e.preventDefault(); onContextMenu(e.clientX, e.clientY) }}
       >
         <div style={getWidgetContainerStyle()}>
-          <div style={getWidgetRowStyle()}>
+          <div style={getWidgetRowStyle(embedded)}>
 
             {/* ── Clock column ────────────────────────────────────────────── */}
             <div style={getWidgetColumnStyle()}>
@@ -288,7 +292,7 @@ export default function ClockWeatherWidget({
 
             {/* ── Weather column ──────────────────────────────────────────── */}
             {clockSettings.showWeather && weather && (
-              <div style={{ ...getWidgetColumnStyle(), paddingLeft: WIDGET_LAYOUT.weatherGap }}>
+              <div style={getWidgetWeatherColumnStyle(embedded)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: WIDGET_LAYOUT.weatherIconGap }}>
                   <img
                     src={weather.icon}

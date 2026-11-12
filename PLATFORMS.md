@@ -35,6 +35,31 @@ Export Linux updates only from the Linux worktree. Each working copy requires
 its own platform-appropriate dependencies; do not copy Windows native modules
 to the Dell or share writable runtime databases between platforms.
 
+## Integrated Desktop Composition
+
+The standalone Linux session uses one desktop window containing wallpaper
+behind a permanently visible, full-screen main panel. It does not create a pull handle or standalone clock
+window. Clock & Weather occupies the former Volume column and uses the existing
+clock settings record and broadcast. The integrated display is not draggable.
+Apps and settings remain separate windows above the desktop.
+
+Do not restore overlay hiding, toggle or pointer-passthrough behavior in this
+session. Desktop appearance stays in the existing themes and settings system.
+This composition was requested and visually verified by the owner on
+12 November 2026. The embedded clock uses its own background transparency;
+the main panel paints its background independently.
+
+The panel background is continuous beneath all embedded widgets. Each widget
+paints its own background above it: 100% widget transparency reveals the panel,
+not a hole through to wallpaper. Widget alpha is not multiplied by panel alpha.
+Borders and text retain their own controls. The earlier cutout implementation
+was rejected by the owner and removed. No extra widget window is required.
+The continuous-panel transparency behavior was verified by the owner on the
+Dell. The single-window desktop is the current tested milestone; a subsequent
+idle measurement is recorded in CHANGELOG.md.
+Wallpaper uses the same settings record and theme function inside the panel
+renderer; there is no separate wallpaper renderer, window or settings listener.
+
 ## Working Method
 
 Before edits, check the current directory and `git branch --show-current`.

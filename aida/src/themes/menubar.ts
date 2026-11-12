@@ -3,11 +3,11 @@
 // AIDA-2 — src/themes/menubar.ts
 //
 // Responsibility:
-//   Complete style specification for the AIDA menubar pull-down surface.
+//   Style specification for the overlay menubar and permanent desktop panel.
 //   The handle pill has its own convention file: src/themes/handle.ts
 //
 // Rules:
-//   - Imports from src/global/ only
+//   - Runtime theme dependencies come from src/global/; contracts from src/types/
 //   - No hardcoded values — all from tokens
 //   - Blured glass + noise texture effect applied here
 //   - One change here = global effect across the entire menubar
@@ -46,7 +46,7 @@ const NOISE = {
 // on Windows). Blur lifts the background colour towards lighter tones as
 // blurIntensity increases — visually mimicking blured glass.
 
-export function getMenuBarStyle(settings: GlobalSettings): React.CSSProperties {
+export function getMenuBarStyle(settings: GlobalSettings, desktopSession = false): React.CSSProperties {
   const p           = getPalette(settings)
   const alpha       = alphaFromTransparency(settings.transparency)
 
@@ -58,6 +58,7 @@ export function getMenuBarStyle(settings: GlobalSettings): React.CSSProperties {
     : [240, 244, 248]
 
   return {
+    minHeight:        desktopSession ? '100vh' : undefined,
     backgroundColor:  `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`,
     color:            COLOR.primary,
     borderRadius:     0,

@@ -3,7 +3,7 @@
 // AIDA-2 — src/components/menubar/MenuBar.tsx
 //
 // Responsibility:
-//   The AIDA pull-down menubar surface.
+//   Wallpaper and permanent panel in one desktop window, or the overlay menubar.
 //   Pure consumer of src/themes/menubar.ts — zero style definitions here.
 //
 // Import depth: menubar/ → depth 2 → ../../
@@ -15,7 +15,9 @@ import type { GlobalSettings, TodaySettings } from '../../types/settings'
 import { defaultSettings, defaultTodaySettings } from '../../types/settings'
 import { loadGlobalSettings, loadTodaySettings } from '../../services/settingsDb'
 import { useGlobal }             from '../../global/useGlobal'
+import { getDesktopBackgroundStyle } from '../../themes/desktop'
 import ProductivityBar                from './ProductivityBar'
+import ClockWeatherSection            from './ClockWeatherSection'
 import ToastStack, { ToastItem }      from './ToastStack'
 import {
   getMenuBarStyle,
@@ -35,8 +37,8 @@ import {
   getMenuBarTaskOpenButtonStyle,
   getMenuBarBodyTextStyle,
   getMenuBarSystemRowStyle,
-  getMenuBarQuickActionsListStyle,
   getMenuBarSystemSectionStyle,
+  getMenuBarQuickActionsListStyle,
   getMenuBarQuickActionItemStyle,
   getMenuBarQuickActionIconStyle,
   getMenuBarQuickActionPlusStyle,
@@ -92,13 +94,14 @@ export default function MenuBar() {
   })
 
   function loadTasks() { loadTasksRef.current() }
-  const [isMenuOpen,      setIsMenuOpen]      = useState(false)
+  const isDesktopSession = window.electron?.isDesktopSession === true
+  const [isMenuOpen,      setIsMenuOpen]      = useState(isDesktopSession)
   const containerRef      = useRef<HTMLDivElement>(null)
   useGlobal(settings)
 
   // ── window:fit — fires once on mount only ────────────────────────────────
   useEffect(() => {
-    if (!containerRef.current || !window.electron) return
+    if (isDesktopSession || !containerRef.current || !window.electron) return
     // Small delay to let content render fully
     const timer = setTimeout(() => {
       const height = containerRef.current?.offsetHeight ?? 0
@@ -116,6 +119,7 @@ export default function MenuBar() {
 
   // ── Mouse position tracking — transparent passthrough ───────────────────────
   useEffect(() => {
+    if (isDesktopSession) return
     function onMouseMove(e: MouseEvent) {
       const el = document.elementFromPoint(e.clientX, e.clientY)
       // If DOM is mid-render, elementFromPoint can return null — skip to avoid
@@ -154,7 +158,7 @@ export default function MenuBar() {
       }
     )
     const offState    = window.electron?.on('menubar:state', (_: unknown, open: boolean) => {
-      setIsMenuOpen(open)
+      setIsMenuOpen(isDesktopSession || open)
       if (open) {
         loadTasks()
 
@@ -182,10 +186,14 @@ export default function MenuBar() {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
-      <div ref={containerRef} className="fixed top-0 left-0 right-0 bottom-0">
+      <div
+        ref={containerRef}
+        className="fixed top-0 left-0 right-0 bottom-0"
+        style={isDesktopSession ? getDesktopBackgroundStyle(settings) : undefined}
+      >
 
-        {/* ── Background surface — wraps all visible content ──────────── */}
-        <div data-menubar-content style={getMenuBarStyle(settings)}>
+        {/* ── Continuous main panel background ───── */}
+        <div data-menubar-content style={getMenuBarStyle(settings, isDesktopSession)}>
 
         {/* ── Centering wrapper ──────────────────────────────────────────── */}
         <div style={getMenuBarWrapperStyle()}>
@@ -300,25 +308,29 @@ export default function MenuBar() {
               <p className={`${scale.body}`} style={getMenuBarBodyTextStyle(settings)}>No new notifications</p>
             </div>
 
-            {/* System */}
-            <div style={getMenuBarColumnStyle()}>
-              <h3 className={`${scale.heading} uppercase tracking-widest`} style={getMenuBarSectionHeaderStyle(settings)}>
-                System
-              </h3>
-              <div style={getMenuBarSystemSectionStyle()}>
-                <div>
-                  <div className={`${scale.body}`} style={getMenuBarSystemRowStyle(settings)}>
-                    <span style={{ opacity: 0.7 }}>🔊</span>
-                    <span>Volume</span>
+            {/* Desktop clock replaces Volume only in the integrated session. */}
+            {isDesktopSession ? (
+              <ClockWeatherSection settings={settings} />
+            ) : (
+              <div style={getMenuBarColumnStyle()}>
+                <h3 className={`${scale.heading} uppercase tracking-widest`} style={getMenuBarSectionHeaderStyle(settings)}>
+                  System
+                </h3>
+                <div style={getMenuBarSystemSectionStyle()}>
+                  <div>
+                    <div className={`${scale.body}`} style={getMenuBarSystemRowStyle(settings)}>
+                      <span style={{ opacity: 0.7 }}>🔊</span>
+                      <span>Volume</span>
+                    </div>
+                    <input
+                      type="range" min="0" max="100" defaultValue={75}
+                      className="w-full rounded-full"
+                      style={{ accentColor: ac, height: MENUBAR_LAYOUT.rangeTrackH } as React.CSSProperties}
+                    />
                   </div>
-                  <input
-                    type="range" min="0" max="100" defaultValue={75}
-                    className="w-full rounded-full"
-                    style={{ accentColor: ac, height: MENUBAR_LAYOUT.rangeTrackH } as React.CSSProperties}
-                  />
                 </div>
               </div>
-            </div>
+            )}
 
           </div>
         </div>{/* end centering wrapper */}
@@ -340,7 +352,7 @@ export default function MenuBar() {
           <ProductivityBar settings={settings} isMenuOpen={isMenuOpen} />
         </div>
 
-        </div>{/* end background surface */}
+        </div>{/* end main panel surface */}
 
       </div>
 

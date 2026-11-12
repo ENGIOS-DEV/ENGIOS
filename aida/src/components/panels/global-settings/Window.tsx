@@ -9,8 +9,8 @@
 // Tabs:
 //   Appearance  — theme, accent colour, font size, animation speed,
 //                 transparency, blur
-//   Behaviour   — menu bar auto-hide, default state, provider session
-//   Widgets     — clock/weather on/off
+//   Behaviour   — provider session; overlay launches also expose menu hiding
+//   Widgets     — clock/weather on/off in the main panel or overlay desktop
 //   System      — auto-start
 //
 // Rules:
@@ -22,6 +22,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useRef } from 'react'
+import DesktopBackgroundPicker from './DesktopBackgroundPicker'
 import { SettingsShell, SectionHeader, SliderRow, ToggleRow, ButtonGroup, ColourSwatch, ItemRow, InputRow } from '../../../components/shared/SettingsShell'
 import { getColourSwatchRowStyle, getQuickPicksWrapperStyle, getQuickPicksLabelStyle, getRGBPreviewRowStyle, getRGBPreviewSwatchStyle, getRGBHexStyle } from '../../../themes/panel'
 import type { GlobalSettings }    from '../../../types/settings'
@@ -132,6 +133,10 @@ export default function Window() {
       ════════════════════════════════════════════════════════════════════ */}
       {activeTab === 0 && (
         <>
+          {window.electron?.isDesktopSession && (
+            <DesktopBackgroundPicker settings={settings} onChange={update} />
+          )}
+
           <SectionHeader title="Transparency" settings={settings} />
 
           <SliderRow
@@ -262,36 +267,38 @@ export default function Window() {
       ════════════════════════════════════════════════════════════════════ */}
       {activeTab === 1 && (
         <>
-          <SectionHeader title="Menu Bar" settings={settings} />
-          <ToggleRow
-            label="Auto-hide menu"
-            description="Hide the menu bar after inactivity"
-            value={settings.autoHideMenu}
-            onChange={v => update({ autoHideMenu: v })}
-            accentColor={ac}
-            settings={settings}
-          />
-          <SliderRow
-            label="Hide delay"
-            value={settings.autoHideDelay}
-            min={1}
-            max={10}
-            step={1}
-            onChange={v => update({ autoHideDelay: v })}
-            accentColor={ac}
-            settings={settings}
-          />
-          <SectionHeader title="Default State" settings={settings} />
-          <ButtonGroup
-            options={[
-              { label: 'Open',   value: 'open'   },
-              { label: 'Closed', value: 'closed' },
-            ]}
-            value={settings.defaultMenuState}
-            onChange={v => update({ defaultMenuState: v })}
-            accentColor={ac}
-            settings={settings}
-          />
+          {!window.electron?.isDesktopSession && <>
+            <SectionHeader title="Menu Bar" settings={settings} />
+            <ToggleRow
+              label="Auto-hide menu"
+              description="Hide the menu bar after inactivity"
+              value={settings.autoHideMenu}
+              onChange={v => update({ autoHideMenu: v })}
+              accentColor={ac}
+              settings={settings}
+            />
+            <SliderRow
+              label="Hide delay"
+              value={settings.autoHideDelay}
+              min={1}
+              max={10}
+              step={1}
+              onChange={v => update({ autoHideDelay: v })}
+              accentColor={ac}
+              settings={settings}
+            />
+            <SectionHeader title="Default State" settings={settings} />
+            <ButtonGroup
+              options={[
+                { label: 'Open',   value: 'open'   },
+                { label: 'Closed', value: 'closed' },
+              ]}
+              value={settings.defaultMenuState}
+              onChange={v => update({ defaultMenuState: v })}
+              accentColor={ac}
+              settings={settings}
+            />
+          </>}
           <SectionHeader title="AI Provider" settings={settings} />
           <ButtonGroup
             options={[
@@ -323,11 +330,11 @@ export default function Window() {
       ════════════════════════════════════════════════════════════════════ */}
       {activeTab === 2 && (
         <>
-          <SectionHeader title="Desktop Widgets" settings={settings} />
+          <SectionHeader title={window.electron?.isDesktopSession ? 'Main Panel' : 'Desktop Widgets'} settings={settings} />
 
           <ToggleRow
             label="Clock & Weather"
-            description="Show the clock and weather widget on the desktop"
+            description={window.electron?.isDesktopSession ? 'Show the clock and weather in the main panel' : 'Show the clock and weather widget on the desktop'}
             value={settings.showClockWidget}
             onChange={v => update({ showClockWidget: v })}
             accentColor={ac}

@@ -31,6 +31,12 @@ silently invent a resolution or rewrite unrelated historical documents.
 - No hardcoded colours, font sizes, or spacing in components; define values in
   the owning token/theme/convention layer. No component-local style definitions
   or getPalette() calls; use the existing typed theme functions.
+- Desktop widgets must own their appearance independently of the main panel.
+  The panel background remains continuous beneath embedded widgets. At 100%
+  widget background transparency, reveal that panel; never cut holes in it.
+  Widget controls change only their own paint, border and text, never another
+  surface or its settings. Do not multiply widget alpha by panel transparency.
+  Apply this rule to future widgets using the existing theme/settings system.
 - No localStorage. Use the established persistence and settings mechanisms.
 - Use strict TypeScript without any. Keep components focused; aim below 200
   lines and split by responsibility rather than arbitrary line count.

@@ -25,7 +25,7 @@ const { ipcMain, BrowserWindow } = require('electron')
 const registry                   = require('../registry.cjs')
 
 // ── Desktop session input policy ──────────────────────────────────────────────
-// The standalone Linux panel owns its full window while open. Electron's
+// The standalone Linux desktop stays visible and owns its full window. Electron's
 // forwarded mouse-move recovery for click-through is Windows/macOS-only.
 const isDesktopSession = process.platform === 'linux' && process.env.AIDA_DESKTOP_SESSION === '1'
 
@@ -68,6 +68,7 @@ ipcMain.on('window:close', (event) => {
 })
 
 ipcMain.on('window:hide', (_event, name) => {
+  if (isDesktopSession && name === 'menubar') return
   const win = registry.getWindow(name)
   if (win && !win.isDestroyed()) {
     win.hide()
@@ -130,6 +131,7 @@ ipcMain.on('toast:showing', () => { toastsShowing = true })
 ipcMain.on('toast:hidden',  () => { toastsShowing = false })
 
 ipcMain.on('menubar:toggle', () => {
+  if (isDesktopSession) return
   const win = registry.getWindow('menubar')
   if (!win || win.isDestroyed()) return
   if (win.isVisible()) {
@@ -144,6 +146,7 @@ ipcMain.on('menubar:toggle', () => {
 })
 
 ipcMain.on('menubar:mouse-over-content', () => {
+  if (isDesktopSession) return
   const win = registry.getWindow('menubar')
   if (win && !win.isDestroyed()) win.setIgnoreMouseEvents(false)
 })
@@ -155,6 +158,7 @@ ipcMain.on('menubar:mouse-over-transparent', () => {
 })
 
 ipcMain.on('menubar:hide', () => {
+  if (isDesktopSession) return
   if (toastsShowing) return   // don't hide while toasts are visible
   const win = registry.getWindow('menubar')
   if (!win || win.isDestroyed()) return

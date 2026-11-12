@@ -6,17 +6,21 @@
 //   Complete style specification for ALL desktop widgets.
 //   Widgets: Clock/Weather.
 //
-// Widgets are always:
+// Standalone widgets are:
 //   - Standalone Electron windows sitting on the desktop
 //   - transparent: true — widget manages its own shape and background
 //   - Never steal focus — showInactive() only, no focus() calls
 //   - Draggable by the user — position persisted to DB
 //   - Right-click context menu for settings and lock/unlock
 //
+// The integrated desktop embeds the same clock in a bounded panel column.
+// Embedded layout wraps when needed and does not own an Electron window.
+//
 // Rules:
 //   - Imports from src/global/ only
 //   - No hardcoded values — all from tokens
-//   - transparency and blurIntensity come from GlobalSettings
+//   - Standalone transparency and blurIntensity follow GlobalSettings
+//   - Embedded widget paint never inherits the main panel's transparency/blur
 //   - One change here = global effect across all widgets
 //
 // Sections:
@@ -49,7 +53,7 @@ import { SPACING, RADIUS, MOTION_SPEED_MAP, EASING, INTERACTION, alphaFromTransp
 // The root element of every widget.
 // Background uses the user's transparency and blur settings.
 
-export function getWidgetWindowStyle(settings: GlobalSettings, clockSettings?: ClockSettings): React.CSSProperties {
+export function getWidgetWindowStyle(settings: GlobalSettings, clockSettings?: ClockSettings, embedded = false): React.CSSProperties {
   const p     = getPalette(settings)
   const alpha = alphaFromTransparency(settings.transparency)
 
@@ -64,17 +68,22 @@ export function getWidgetWindowStyle(settings: GlobalSettings, clockSettings?: C
     ? [1,   4,   9  ]   // #010409
     : [240, 244, 248]   // #F0F4F8
 
-  const bgAlpha     = alphaFromTransparency(bgOpacity) * alpha
+  // The embedded clock owns its background; the main panel paints its own.
+  // Standalone widgets retain the shared global transparency multiplier.
+  const bgAlpha     = alphaFromTransparency(bgOpacity) * (embedded ? 1 : alpha)
   const borderAlpha = alphaFromTransparency(borderOp)
 
   return {
     display:              'inline-block',
-    width:                'max-content',
+    width:                embedded ? '100%' : 'max-content',
+    maxWidth:             embedded ? '100%' : undefined,
+    minWidth:             embedded ? 0 : undefined,
+    boxSizing:            embedded ? 'border-box' : undefined,
     borderRadius:         RADIUS.lg,
     backgroundColor:      `rgba(${r}, ${g}, ${b}, ${bgAlpha.toFixed(2)})`,
     border:               `1px solid rgba(255, 255, 255, ${borderAlpha.toFixed(2)})`,
-    backdropFilter:       `blur(${settings.blurIntensity / 10}px)`,
-    WebkitBackdropFilter: `blur(${settings.blurIntensity / 10}px)`,
+    backdropFilter:       embedded ? 'none' : `blur(${settings.blurIntensity / 10}px)`,
+    WebkitBackdropFilter: embedded ? 'none' : `blur(${settings.blurIntensity / 10}px)`,
     color:                COLOR.primary,
     userSelect:           'none',
     fontFamily:           clockSettings?.fontFamily,
@@ -173,11 +182,12 @@ export function getWidgetContainerStyle(): React.CSSProperties {
 }
 
 
-export function getWidgetRowStyle(): React.CSSProperties {
+export function getWidgetRowStyle(embedded = false): React.CSSProperties {
   return {
     display:    'flex',
     alignItems: 'center',
-    gap:        WIDGET_LAYOUT.weatherGap,
+    gap:        embedded ? WIDGET_LAYOUT.gap : WIDGET_LAYOUT.weatherGap,
+    flexWrap:   embedded ? 'wrap' : 'nowrap',
   }
 }
 
@@ -188,6 +198,14 @@ export function getWidgetColumnStyle(): React.CSSProperties {
     display:       'flex',
     flexDirection: 'column',
     gap:           WIDGET_LAYOUT.textGap,
+  }
+}
+
+// The embedded column already receives the row gap; avoid doubling it.
+export function getWidgetWeatherColumnStyle(embedded = false): React.CSSProperties {
+  return {
+    ...getWidgetColumnStyle(),
+    paddingLeft: embedded ? 0 : WIDGET_LAYOUT.weatherGap,
   }
 }
 

@@ -163,10 +163,11 @@ AIDA launched quickly and remained responsive with Vite stopped.
 
 The launcher marks its Electron client with `AIDA_DESKTOP_SESSION=1`. In this
 Linux session, the open main-panel window retains mouse input over its entire
-area, including transparent space; hiding the panel still releases the window.
+area, including transparent space. The permanent desktop composition below
+supersedes the earlier hide/reveal behavior.
 This avoids relying on Electron's Windows/macOS-only forwarded mouse movement
 to recover from click-through. Overlay launches retain their existing policy.
-The reported gear and right-hand dropdown failure still needs a Dell retest.
+The owner verified on the Dell that the settings gear and right-hand Folder/AIDA Chat dropdown both respond correctly after a fresh login.
 
 For password-login integration, run `sh /home/jacklewan/ENGIOS/Enable-AIDA-Login.sh`
 as the normal user. It backs up `.profile`, checks the addition with `bash -n`,
@@ -185,6 +186,51 @@ touch /home/jacklewan/.config/engios/skip-aida-autostart
 
 Remove that bypass file to restore startup. The installer reports the original
 profile backup path if the login addition needs to be rolled back entirely.
+
+### Permanent main panel and desktop background
+
+The standalone Linux session creates one desktop window containing wallpaper
+behind a permanently visible, full-screen main panel. It creates neither a pull handle nor a standalone clock
+window. Clock & Weather replaces the Volume column, using its existing widget
+display, saved preferences and settings broadcast. An adjacent settings button
+remains available even when clock visibility is disabled. Embedded weather is
+fixed in its column and wraps within the available width.
+
+The shell ignores its former hide/toggle commands in the desktop session and
+owns input across the panel, including transparent areas. Overlay-specific
+auto-hide, initial open/closed and widget-position controls are omitted from
+the desktop settings UI. Apps and settings still open as separate windows.
+The remaining grid, greeting and productivity bar retain their existing layout
+rules; the clock column can grow vertically when its contents need to wrap.
+
+Appearance settings provide Choose image and Remove image. The native dialog
+accepts PNG, JPEG and WebP files up to 20 MB; decoded images are limited to 40
+megapixels. A content-addressed copy is retained under userData/desktop-backgrounds,
+while the selected local URL is saved in the existing GlobalSettings record.
+Existing records receive the empty-image default through the normal defaults
+merge. Removing the selection returns to the theme background; imported files
+are retained for reuse. Images use centered cover scaling, which can crop edges.
+
+The owner verified image selection on the Dell. Initial testing exposed an
+unmanaged wallpaper window (X11 override-redirect); its focusable configuration
+was corrected so labwc can manage it, with pointer input passed through.
+The pull handle subsequently remained unresponsive, prompting the owner's
+permanent-panel composition above rather than further handle work.
+
+The owner visually verified the permanent composition on the Dell. Widget
+background transparency belongs to each widget, independently of panel alpha.
+The panel background remains continuous beneath widgets. A fully transparent
+widget reveals the panel beneath it; its controls must never cut a hole through
+the panel or change another surface. Border and text controls remain separate.
+
+The earlier background cutout was a misunderstanding of independence and has
+been removed, including its geometry registry and observers. The owner verified
+the corrected transparency composition on the Dell. Wallpaper now paints inside
+the main panel window, reusing its settings load and updates. The separate
+wallpaper factory, renderer and build entry have been removed. Local lifecycle,
+rendered and build checks cover this consolidation. The owner accepted this
+state as the Dell desktop milestone; see CHANGELOG.md for observed resource use.
+Existing unrelated TypeScript diagnostics remain unchanged.
 
 ### Longer-term work
 

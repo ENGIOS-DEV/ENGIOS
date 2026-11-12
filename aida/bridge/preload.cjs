@@ -30,6 +30,10 @@ contextBridge.exposeInMainWorld('electron', {
 
   platform:   process.platform,
   isElectron: true,
+  isDesktopSession: process.platform === 'linux' && process.env.AIDA_DESKTOP_SESSION === '1',
+
+  // Native image selection — electron/ipc/desktop.cjs
+  chooseDesktopBackground: () => ipcRenderer.invoke('desktop:choose-background'),
 
   // ── OS utilities ──────────────────────────────────────────────────────────
 

@@ -34,6 +34,7 @@ const { nativeImage } = require('electron')
 // An unpackaged Linux session can use the build without a development server.
 const isDev      = !app.isPackaged && process.env.NODE_ENV !== 'production'
 const DEV_PORT   = Number(process.env.AIDA_DEV_PORT || 5390)
+const isDesktopSession = process.platform === 'linux' && process.env.AIDA_DESKTOP_SESSION === '1'
 const preloadPath = path.join(__dirname, '../bridge/preload.cjs')
 
 // ─── Startup diagnostics ──────────────────────────────────────────────────────
@@ -61,6 +62,7 @@ const { createWidgetWindow                     } = require('./windows/widgets.cj
 // IPC handlers — imported for side effects (they register themselves)
 const { onTasksUpdated } = require('./ipc/database.cjs')
 require('./ipc/settings.cjs')
+require('./ipc/desktop.cjs')
 require('./ipc/filesystem.cjs')
 require('./ipc/windows.cjs')
 require('./ipc/system.cjs')
@@ -133,7 +135,8 @@ app.on('window-all-closed', () => {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // INITIAL WINDOW CREATION
-// Creates the shell (menubar + handle) and desktop widgets on startup.
+// Creates one desktop window containing wallpaper and the permanent main panel.
+// Overlay launches retain their handle and standalone widget windows.
 // All other windows are created lazily on first use via ensureAppWindow /
 // ensurePanelWindow.
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -141,33 +144,25 @@ app.on('window-all-closed', () => {
 function createInitialWindows() {
   const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize
 
-  // ── Handle first — show immediately, don't wait for ready-to-show ──────────
-  createHandleWindow()
+  if (!isDesktopSession) createHandleWindow()
 
-  // ── Menubar + Widgets after handle ─────────────────────────────────────────
   createMenubarWindow()
 
-  // ── Widgets ─────────────────────────────────────────────────────────────────
-  // Created at startup. Visibility controlled by GlobalSettings.
-  const clockPos   = { x: sw - 400, y: 8   }
-
-  const clockWin   = createWidgetWindow('clock-weather-widget', isDev, preloadPath, DEV_PORT, clockPos.x, clockPos.y)
-  // Toast now renders inside the menubar window — no separate widget needed
-
-  // Show widgets according to saved GlobalSettings
-  clockWin.once('ready-to-show', () => {
-    logStartup('clock widget ready-to-show')
-    try {
-      const raw      = db.getSetting('aida-settings')
-      const settings = raw ? JSON.parse(raw) : {}
-      if (settings.showClockWidget !== false) clockWin.showInactive()
-    } catch (_) {
-      clockWin.showInactive()
-    }
-  })
-
-  // Toast window — show only after first window:fit (via toast:ready)
-  ipcMain.once('toast:ready', () => toastWin.showInactive())
+  // The integrated clock lives inside the main panel, with no separate window.
+  if (!isDesktopSession) {
+    const clockPos = { x: sw - 400, y: 8 }
+    const clockWin = createWidgetWindow('clock-weather-widget', isDev, preloadPath, DEV_PORT, clockPos.x, clockPos.y)
+    clockWin.once('ready-to-show', () => {
+      logStartup('clock widget ready-to-show')
+      try {
+        const raw      = db.getSetting('aida-settings')
+        const settings = raw ? JSON.parse(raw) : {}
+        if (settings.showClockWidget !== false) clockWin.showInactive()
+      } catch (_) {
+        clockWin.showInactive()
+      }
+    })
+  }
 
   // ── Nudge system ─────────────────────────────────────────────────────────
   // Tracks which task IDs have been nudged this session — resets at midnight.
@@ -408,8 +403,8 @@ function createHandleWindow() {
 
 // ─── createMenubarWindow ─────────────────────────────────────────────────────
 // Full-screen transparent window for the pull-down menubar surface.
-// Hidden by default. Transparent to mouse events when hidden.
-// Revealed by the handle window via IPC.
+// The desktop session shows this surface permanently and owns its full input.
+// Overlay launches remain hidden until revealed by the handle via IPC.
 
 function createMenubarWindow() {
   const { width, height } = screen.getPrimaryDisplay().bounds
@@ -419,6 +414,7 @@ function createMenubarWindow() {
     height,   // full screen height — content is fixed/top, dropdowns render freely below
     x:           0,
     y:           0,
+    type:        isDesktopSession ? 'desktop' : undefined,
     frame:           false,
     transparent:     true,
     alwaysOnTop:     false,
@@ -442,9 +438,21 @@ function createMenubarWindow() {
 
   win.setMenu(null)
 
-  // Transparent to mouse events — content div is fixed/top-only so
-  // transparent areas don't block clicks. Mirrors AIDA-1 pattern.
-  win.setIgnoreMouseEvents(true, { forward: true })
+  if (isDesktopSession) {
+    win.setIgnoreMouseEvents(false)
+    win.once('ready-to-show', () => {
+      logStartup('desktop panel ready-to-show')
+      win.showInactive()
+    })
+
+    function fitDisplay() {
+      if (!win.isDestroyed()) win.setBounds(screen.getPrimaryDisplay().bounds)
+    }
+    screen.on('display-metrics-changed', fitDisplay)
+    win.once('closed', () => screen.removeListener('display-metrics-changed', fitDisplay))
+  } else {
+    win.setIgnoreMouseEvents(true, { forward: true })
+  }
 
   win.on('focus', () => {
     if (!win.isDestroyed()) win.webContents.send('window:focus')

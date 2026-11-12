@@ -160,14 +160,17 @@ export default function Window() {
 
         {/* ── Appearance ────────────────────────────────────────────────── */}
         {activeTab === 2 && <>
-          <SectionHeader title="Position" />
-          <ToggleRow
-            label="Lock Position"
-            description="Prevent accidental dragging"
-            value={ws.positionLocked}
-            onChange={v => update({ positionLocked: v })}
-            accentColor={ac} settings={settings}
-          />
+          {!window.electron?.isDesktopSession && <>
+            <SectionHeader title="Position" />
+            <ToggleRow
+              label="Lock Position"
+              description="Prevent accidental dragging"
+              value={ws.positionLocked}
+              onChange={v => update({ positionLocked: v })}
+              accentColor={ac} settings={settings}
+            />
+
+          </>}
 
           <SectionHeader title="Font" />
           <ButtonGroup

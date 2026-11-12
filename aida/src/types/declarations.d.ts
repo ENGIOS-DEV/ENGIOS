@@ -25,6 +25,8 @@ declare module '*.ico'  { const src: string; export default src }
 interface ElectronAPI {
   platform:   string
   isElectron: boolean
+  isDesktopSession: boolean
+  chooseDesktopBackground: () => Promise<{ imageUrl?: string; cancelled?: boolean; error?: string }>
 
   openFile:     (filePath: string) => Promise<{ success?: boolean; error?: string }>
   openProvider:  (url: string, label: string, keepSession: boolean) => Promise<void>

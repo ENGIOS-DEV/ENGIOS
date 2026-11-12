@@ -26,6 +26,9 @@ export interface GlobalSettings {
   // ── Theme ──────────────────────────────────────────────────────────────────
   theme:          'dark' | 'light'
 
+  // ── Desktop ────────────────────────────────────────────────────────────────
+  desktopBackgroundImage: string                // managed local image URL; empty means theme background
+
   // ── Appearance ─────────────────────────────────────────────────────────────
   transparency:   number                        // 0–100
   blurIntensity:  number                        // 0–100
@@ -102,6 +105,9 @@ export const defaultTodaySettings: TodaySettings = {
 export const defaultSettings: GlobalSettings = {
   // Theme
   theme:          'dark',
+
+  // Desktop
+  desktopBackgroundImage: '',
 
   // Appearance
   transparency:   20,

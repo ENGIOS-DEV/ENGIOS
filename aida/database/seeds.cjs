@@ -44,6 +44,7 @@ function seedCore() {
   const defaultSettings = {
     'aida-settings': JSON.stringify({
       theme:               'dark',
+      desktopBackgroundImage: '',
       transparency:        20,
       blurIntensity:       40,
       accentColor:         '#3982F4',

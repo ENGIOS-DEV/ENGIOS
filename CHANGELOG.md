@@ -4,6 +4,32 @@
 
 ---
 
+## Linux desktop milestone — 12 November 2026
+
+*Development snapshot on `linux-integrated`; not a packaged OS release.*
+
+- Debian 13 desktop session using labwc, Xwayland and built AIDA files.
+- Normal local login starts AIDA; SSH sessions remain independent.
+- One desktop window contains wallpaper and the permanent main panel.
+- Clock & Weather is embedded in the panel; the pull handle is removed.
+- Local wallpaper selection uses the existing persisted settings mechanism.
+- Widget transparency reveals the continuous panel beneath it; widget background,
+  border and text controls remain independent of panel transparency.
+- Windows and integrated Linux development have separate working copies.
+
+The owner verified the desktop on a Dell Latitude 3520. An idle `top` snapshot
+showed 989 MiB total system RAM used, 95% CPU idle and no swap use. These are
+observations from this setup, not a controlled cross-platform benchmark.
+
+Local production build, single-window lifecycle/input checks and rendered
+transparency checks passed. TypeScript checking still reports existing errors
+in SettingsShell and the Notes/Tasks themes. The earlier dependency install
+reported 69 audit findings; these have not been remediated by this milestone.
+The Linux launcher is a source-tree session launcher, not a distribution installer.
+AI inference and full OS capability management are not validated by this snapshot.
+
+---
+
 ## v0.1.0 — April 2026
 
 *First public release. ENGIOS is a work in progress.*
