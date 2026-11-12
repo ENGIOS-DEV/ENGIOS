@@ -131,6 +131,63 @@ Services disabled at boot: `bluetooth.service` · `cron.service` (AIDA handles s
 
 ## Long-Term Direction
 
+### Dell labwc test session — November 2026
+
+The Dell Latitude 3520 test uses Debian 13 with labwc 0.8.3-1 and Xwayland
+2:24.1.6-1. AIDA has been observed working through Xwayland without the
+`--disable-gpu` workaround required in the earlier Openbox test. Electron's
+active rendering backend has not yet been independently verified.
+
+The repository-root `Start-AIDA-Linux.sh` provides the next test procedure:
+
+1. Install dependencies in `aida` with `npm ci`, then rebuild SQLite for Electron
+   with `./node_modules/.bin/electron-rebuild -f -w better-sqlite3`.
+2. Run `npm run build` in `aida` after source updates.
+3. Stop existing AIDA and Vite processes, and exit the graphical session.
+4. From the Dell's local text console, as the normal logged-in user, run
+   `sh /home/jacklewan/ENGIOS/Start-AIDA-Linux.sh`.
+
+The launcher sets `NODE_ENV=production` so the existing window factories load
+built HTML files. Development launches retain Vite. Relative build asset paths
+support Electron's local file loading. No development server, npm process, or
+graphical terminal is started by the launcher. labwc ends when AIDA exits.
+
+This is an unpackaged source-tree test session verified on the Dell.
+It is not yet a Debian package, a login-screen entry, an automatic boot
+session, or a native Wayland AIDA shell. It preserves the current window layout
+and click-through behavior. The earlier hardware and startup claims elsewhere
+in this document describe historical tests, not the Dell's current setup.
+
+The built-file launcher was subsequently verified by the owner on the Dell:
+AIDA launched quickly and remained responsive with Vite stopped.
+
+The launcher marks its Electron client with `AIDA_DESKTOP_SESSION=1`. In this
+Linux session, the open main-panel window retains mouse input over its entire
+area, including transparent space; hiding the panel still releases the window.
+This avoids relying on Electron's Windows/macOS-only forwarded mouse movement
+to recover from click-through. Overlay launches retain their existing policy.
+The reported gear and right-hand dropdown failure still needs a Dell retest.
+
+For password-login integration, run `sh /home/jacklewan/ENGIOS/Enable-AIDA-Login.sh`
+as the normal user. It backs up `.profile`, checks the addition with `bash -n`,
+and starts the session only after local tty1 login. It leaves SSH and other
+consoles available and returns to a prompt when AIDA ends. The owner verified
+that a fresh local password login starts AIDA successfully; no auto-login is
+configured. Cold-boot behavior has not yet been verified.
+
+Session output is saved to `~/.local/state/engios/aida-session.log`. To bypass
+startup, run these commands over SSH before the next local login:
+
+```sh
+mkdir -p /home/jacklewan/.config/engios
+touch /home/jacklewan/.config/engios/skip-aida-autostart
+```
+
+Remove that bypass file to restore startup. The installer reports the original
+profile backup path if the login addition needs to be rolled back entirely.
+
+### Longer-term work
+
 When AIDA reaches sufficient maturity, the two layers will begin to converge:
 
 - Native Wayland compositor to replace the Electron shell

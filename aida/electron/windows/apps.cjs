@@ -51,6 +51,7 @@ const APP_SIZES = {
   'file-decks': { width: 820,  height: 560 },
   'aida-chat':  { width: 800,  height: 560 },
   'tasks':      { width: 700,  height: 600 },
+  'notes':      { width: 860,  height: 620 },
   'terminal':   { width: 800,  height: 480 },
   'provider':   { width: 1200, height: 860 },
 }
@@ -62,6 +63,7 @@ const APP_PATHS = {
   'file-decks': 'src/components/apps/file-decks/index.html',
   'aida-chat':  'src/components/apps/aida-chat/index.html',
   'tasks':      'src/components/apps/tasks/index.html',
+  'notes':      'src/components/apps/notes/index.html',
   'terminal':   'src/components/apps/terminal/index.html',
   'provider':   'src/components/apps/provider/index.html',
 }

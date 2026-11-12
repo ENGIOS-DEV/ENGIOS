@@ -221,6 +221,11 @@ export default function MenuBar() {
                         style={{ ...getMenuBarQuickActionPlusStyle(settings), pointerEvents: 'all', cursor: 'pointer' }}
                         onClick={() => window.electron?.send('tasks:open')}
                       >+</button>
+                    ) : action.label === 'Notes' ? (
+                      <button
+                        style={{ ...getMenuBarQuickActionPlusStyle(settings), pointerEvents: 'all', cursor: 'pointer' }}
+                        onClick={() => window.electron?.send('notes:open')}
+                      >+</button>
                     ) : (
                       <div style={getMenuBarQuickActionPlusStyle(settings)}>+</div>
                     )}

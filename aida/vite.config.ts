@@ -12,6 +12,9 @@ import tailwindcss      from '@tailwindcss/vite'
 import { resolve }      from 'path'
 
 export default defineConfig({
+  // Built windows load through file:// in Electron, at different entry depths.
+  base: './',
+
   plugins: [
     react(),
     tailwindcss(),
@@ -30,6 +33,7 @@ export default defineConfig({
         'tasks':      resolve(__dirname, 'src/components/apps/tasks/index.html'),
       'aida-chat':  resolve(__dirname, 'src/components/apps/aida-chat/index.html'),
       'provider':   resolve(__dirname, 'src/components/apps/provider/index.html'),
+        'notes':      resolve(__dirname, 'src/components/apps/notes/index.html'),
 
         // ── Panels ───────────────────────────────────────────────────────
         settings:              resolve(__dirname, 'src/components/panels/global-settings/index.html'),

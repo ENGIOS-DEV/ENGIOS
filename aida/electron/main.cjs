@@ -14,6 +14,7 @@
 //   - IPC routing for open/show/hide per named window
 //   - Auto-start registration
 //   - Provider window management
+//   - Startup timing diagnostics for the Linux session test
 //
 // What does NOT live here:
 //   - Window creation logic        → electron/windows/*.cjs
@@ -30,9 +31,21 @@ const path = require('path')
 const { nativeImage } = require('electron')
 
 // ─── Environment ──────────────────────────────────────────────────────────────
-const isDev      = !app.isPackaged
-const DEV_PORT   = 5390
+// An unpackaged Linux session can use the build without a development server.
+const isDev      = !app.isPackaged && process.env.NODE_ENV !== 'production'
+const DEV_PORT   = Number(process.env.AIDA_DEV_PORT || 5390)
 const preloadPath = path.join(__dirname, '../bridge/preload.cjs')
+
+// ─── Startup diagnostics ──────────────────────────────────────────────────────
+// Wall-clock timestamps align with the launcher; elapsed time isolates stages.
+const startupTime = process.hrtime.bigint()
+
+function logStartup(stage) {
+  const elapsedMs = Number(process.hrtime.bigint() - startupTime) / 1e6
+  console.info(`[startup] ${new Date().toISOString()} +${elapsedMs.toFixed(0)}ms ${stage}`)
+}
+
+logStartup('main process entered')
 
 // ─── Module imports ───────────────────────────────────────────────────────────
 // Order matters — registry first, then DB, then windows, then IPC handlers.
@@ -86,6 +99,7 @@ const os = require('os')
 ipcMain.handle('os:username', () => os.userInfo().username)
 
 app.whenReady().then(() => {
+  logStartup('Electron ready')
   // Set taskbar/dock icon to AIDA logo
   try {
     const iconPath = path.join(__dirname, '../src/assets/icons/aida.ico')
@@ -97,10 +111,13 @@ app.whenReady().then(() => {
   // getDb() initialises the connection, runs schema, runs migrations.
   // seeds.runSeeds() seeds default data for both core and flags.
   db.getDb()
+  logStartup('database ready')
   seeds.runSeeds()
+  logStartup('seeds ready')
 
   // ── Create initial windows ──────────────────────────────────────────────────
   createInitialWindows()
+  logStartup('initial windows created')
 
   // ── macOS re-activate ────────────────────────────────────────────────────────
   app.on('activate', () => {
@@ -139,6 +156,7 @@ function createInitialWindows() {
 
   // Show widgets according to saved GlobalSettings
   clockWin.once('ready-to-show', () => {
+    logStartup('clock widget ready-to-show')
     try {
       const raw      = db.getSetting('aida-settings')
       const settings = raw ? JSON.parse(raw) : {}
@@ -345,6 +363,7 @@ function createInitialWindows() {
 // Always visible. alwaysOnTop: true. Triggers menubar reveal on hover/click.
 
 function createHandleWindow() {
+  logStartup('creating handle')
   const { width: sw }        = screen.getPrimaryDisplay().workAreaSize
   const { HANDLE_W, HANDLE_H } = require('../src/themes/handle.constants.cjs')
 
@@ -368,6 +387,9 @@ function createHandleWindow() {
     },
   })
 
+  win.webContents.once('dom-ready', () => logStartup('handle DOM ready'))
+  win.once('ready-to-show', () => logStartup('handle ready-to-show'))
+
   if (isDev) {
     win.loadURL(`http://localhost:${DEV_PORT}/src/components/menubar/handle.html`)
   } else {
@@ -375,7 +397,11 @@ function createHandleWindow() {
   }
 
   win.setMenu(null)
-  win.webContents.once('did-finish-load', () => win.show())
+  win.webContents.once('did-finish-load', () => {
+    logStartup('handle did-finish-load')
+    win.show()
+    logStartup('handle show requested')
+  })
   registry.register('handle', win)
   return win
 }
@@ -439,7 +465,11 @@ function createMenubarWindow() {
 
 function openAppWindow(name) {
   const win = ensureAppWindow(name, isDev, preloadPath, DEV_PORT)
-  if (win && !win.isDestroyed()) { win.show(); win.focus() }
+  if (win && !win.isDestroyed()) {
+    win.show()
+    win.focus()
+    if (isDev && name === 'notes') win.webContents.openDevTools()
+  }
 }
 
 function openPanelWindow(name) {
@@ -493,6 +523,7 @@ ipcMain.on('search:open', (_event, query) => {
   }
 })
 ipcMain.on('tasks:open',       () => openAppWindow('tasks'))
+ipcMain.on('notes:open',       () => openAppWindow('notes'))
 ipcMain.on('terminal:open',    () => openAppWindow('terminal'))
 
 // Also handle the legacy channel name sent by the menubar for File Decks

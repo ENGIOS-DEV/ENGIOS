@@ -327,6 +327,10 @@ function runMigrations() {
     () => {
       db.exec(`ALTER TABLE tasks ADD COLUMN reminder_interval TEXT`)
     },
+    // v4 — Add note_type to notes for editor routing (rich | checklist | plain).
+    () => {
+      db.exec(`ALTER TABLE notes ADD COLUMN note_type TEXT NOT NULL DEFAULT 'rich'`)
+    },
   ]
 
   const insert = db.prepare(`INSERT INTO schema_version (version) VALUES (?)`)

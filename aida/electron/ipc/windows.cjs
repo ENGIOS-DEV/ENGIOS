@@ -24,6 +24,11 @@
 const { ipcMain, BrowserWindow } = require('electron')
 const registry                   = require('../registry.cjs')
 
+// ── Desktop session input policy ──────────────────────────────────────────────
+// The standalone Linux panel owns its full window while open. Electron's
+// forwarded mouse-move recovery for click-through is Windows/macOS-only.
+const isDesktopSession = process.platform === 'linux' && process.env.AIDA_DESKTOP_SESSION === '1'
+
 // ── window:show ───────────────────────────────────────────────────────────────
 // Shows a named window. Widget windows use showInactive() — they never
 // steal focus from whatever the user is currently doing.
@@ -105,9 +110,8 @@ ipcMain.on('window:maximise', event => {
 // setIgnoreMouseEvents ensures the full-screen menubar window only
 // captures mouse events when it is actually visible.
 
-// Mirrors AIDA-1 proven pattern exactly.
-// Toggle does NOT call setIgnoreMouseEvents — the fixed-position content div
-// only covers what it needs to. The transparent area has no DOM element.
+// Standalone desktop sessions keep input across the open panel's whole window,
+// including transparent areas. Overlay launches retain content-based passthrough.
 
 // ── toast:show ───────────────────────────────────────────────────────────────
 // Send a toast to the desktop toast widget from anywhere in main process.
@@ -145,6 +149,7 @@ ipcMain.on('menubar:mouse-over-content', () => {
 })
 
 ipcMain.on('menubar:mouse-over-transparent', () => {
+  if (isDesktopSession) return
   const win = registry.getWindow('menubar')
   if (win && !win.isDestroyed()) win.setIgnoreMouseEvents(true, { forward: true })
 })
